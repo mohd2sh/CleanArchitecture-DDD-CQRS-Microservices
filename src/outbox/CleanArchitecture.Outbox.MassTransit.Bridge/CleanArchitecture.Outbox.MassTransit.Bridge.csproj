@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    
+    <PackageId>Mohd2sh.CleanArchitecture.Outbox.MassTransit.Bridge</PackageId>
+    <Description>MassTransit abstractions and infrastructure for Clean Architecture microservices. Provides IOutboxPublisher interface, MassTransitOutboxPublisher implementation, and IntegrationEventConsumer base class for bridging MassTransit messages to IIntegrationEventHandler.</Description>
+    <PackageTags>masstransit;messaging;microservices;outbox;events</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MassTransit" Version="8.2.5" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.5" />
+    <PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.2.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageReference Include="Mohd2sh.CleanArchitecture.Core.Application" Version="1.0.1" />
+    <PackageReference Include="Mohd2sh.CleanArchitecture.Outbox.Abstractions" Version="1.0.1" />
+
+  </ItemGroup>
+
+</Project>
+

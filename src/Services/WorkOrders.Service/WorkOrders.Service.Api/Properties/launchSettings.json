@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "WorkOrders.Service.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:56412;http://localhost:56413"
+    }
+  }
+}

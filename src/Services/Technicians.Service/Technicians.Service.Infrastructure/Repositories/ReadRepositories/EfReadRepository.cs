@@ -1,0 +1,36 @@
+using CleanArchitecture.Core.Application.Abstractions.Persistence;
+using CleanArchitecture.Core.Application.Abstractions.Persistence.Repositories;
+using CleanArchitecture.Core.Application.Abstractions.Query;
+using CleanArchitecture.Core.Domain.Abstractions;
+using CleanArchitecture.Core.Infrastructure.Persistence.EfCore;
+using Microsoft.EntityFrameworkCore;
+using Technicians.Service.Infrastructure.Persistence.EfCore;
+
+namespace Technicians.Service.Infrastructure.Repositories.ReadRepositories;
+
+public class EfReadRepository<T, TId> : IReadRepository<T, TId>
+    where T : class, IEntity<TId>
+{
+    private readonly ReadDbContext _db;
+
+    public EfReadRepository(ReadDbContext db) => _db = db;
+
+    public async Task<T?> FirstOrDefaultAsync(Criteria<T> criteria, CancellationToken cancellationToken = default)
+        => await _db.Set<T>().AsQueryable().Apply(criteria).AsNoTracking().FirstOrDefaultAsync(cancellationToken);
+
+    public async Task<bool> AnyAsync(Criteria<T> criteria, CancellationToken cancellationToken = default)
+        => await _db.Set<T>().AsQueryable().Apply(criteria).AsNoTracking().AnyAsync(cancellationToken);
+
+    public async Task<PaginatedList<T>> ListAsync(Criteria<T> criteria, CancellationToken cancellationToken = default)
+    {
+        var (query, totalCount) = await _db.Set<T>()
+            .AsQueryable()
+            .ApplyWithCountAsync(criteria, cancellationToken);
+
+        var items = await query.AsNoTracking().ToListAsync(cancellationToken);
+
+        return PaginatedList<T>.CreateFromOffset(items, totalCount, criteria.Skip, criteria.Take);
+    }
+}
+
+

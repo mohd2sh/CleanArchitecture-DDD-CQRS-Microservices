@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\core\CleanArchitecture.Core.Api\CleanArchitecture.Core.Api.csproj" />
+    <ProjectReference Include="..\WorkOrders.Service.Application\WorkOrders.Service.Application.csproj" />
+    <ProjectReference Include="..\WorkOrders.Service.Infrastructure\WorkOrders.Service.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\outbox\CleanArchitecture.Outbox\CleanArchitecture.Outbox.csproj" />
+  </ItemGroup>
+
+</Project>
+

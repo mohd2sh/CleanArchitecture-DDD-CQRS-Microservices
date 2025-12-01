@@ -11,3 +11,9 @@ public interface IOutboxProcessor
     Task ProcessOutboxMessagesAsync(CancellationToken cancellationToken = default);
 }
 
+
+
+
+
+
+

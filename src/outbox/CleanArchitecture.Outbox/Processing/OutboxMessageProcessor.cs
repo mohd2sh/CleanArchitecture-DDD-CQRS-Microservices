@@ -4,9 +4,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using CleanArchitecture.Core.Application.Abstractions.Events;
 using CleanArchitecture.Outbox.Abstractions;
 using CleanArchitecture.Outbox.Persistence;
+using CleanArchitecture.Outbox.Processing.Wrappers;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,9 +67,10 @@ public sealed class OutboxMessageProcessor : IOutboxProcessor
 
                 messageId = message.Id;
 
-                await ProcessMessage(message, scope, cancellationToken);
 
                 await outboxStore.MarkAsProcessedAsync(message.Id, cancellationToken);
+
+                await ProcessMessage(message, scope, cancellationToken);
 
                 await transaction.CommitAsync(cancellationToken);
 
@@ -112,8 +113,10 @@ public sealed class OutboxMessageProcessor : IOutboxProcessor
             throw new InvalidOperationException("Deserialization failed");
         }
 
-        var dispatcher = scope.ServiceProvider.GetRequiredService<IIntegrationEventDispatcher>();
-        await dispatcher.PublishAsync(integrationEvent, cancellationToken);
+        var wrapperType = typeof(OutboxPublisherWrapper<>).MakeGenericType(eventType);
+        var wrapper = (OutboxPublisherWrapperBase)Activator.CreateInstance(wrapperType)!;
+
+        await wrapper.PublishAsync(integrationEvent, scope.ServiceProvider, cancellationToken);
     }
 
     private static bool IsSqlException(Exception ex)

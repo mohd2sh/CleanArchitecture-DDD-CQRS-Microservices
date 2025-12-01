@@ -1,6 +1,0 @@
-using CleanArchitecture.Cmms.Application.Technicians.Dtos;
-using CleanArchitecture.Core.Application.Abstractions.Common;
-
-namespace CleanArchitecture.Cmms.Application.Technicians.Queries.GetTechnicianById;
-
-public sealed record GetTechnicianByIdQuery(Guid TechnicianId) : IQuery<Result<TechnicianDto>>;

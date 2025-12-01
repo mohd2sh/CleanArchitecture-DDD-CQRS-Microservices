@@ -1,0 +1,135 @@
+using CleanArchitecture.Cmms.Contracts.WorkOrders.Events;
+using CleanArchitecture.Core.Domain.Abstractions;
+using WorkOrders.Service.Domain.WorkOrders.Entities;
+using WorkOrders.Service.Domain.WorkOrders.Enums;
+using WorkOrders.Service.Domain.WorkOrders.ValueObjects;
+
+namespace WorkOrders.Service.Domain.WorkOrders;
+
+internal sealed class WorkOrder : AggregateRoot<Guid>
+{
+    private readonly List<TaskStep> _steps = new();
+    private readonly List<Comment> _comments = new();
+
+    private WorkOrder() { }
+
+    private WorkOrder(Guid id, Guid assetId, string title, Location location, WorkOrderStatus status) : base(id)
+    {
+        AssetId = assetId;
+        Title = title;
+        Location = location;
+        Status = status;
+        Raise(new WorkOrderCreatedEvent(Id, AssetId, title));
+    }
+
+    public string Title { get; private set; } = default!;
+    public Location Location { get; private set; }
+    public WorkOrderStatus Status { get; private set; }
+    public Guid? TechnicianId { get; private set; }
+    public Guid AssetId { get; private set; }
+
+    public IReadOnlyCollection<TaskStep> Steps => _steps.AsReadOnly();
+    public IReadOnlyCollection<Comment> Comments => _comments.AsReadOnly();
+
+    public static WorkOrder Create(Guid assetId, string title, Location location)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            throw new DomainException(WorkOrderErrors.TitleRequired);
+
+        if (assetId == Guid.Empty)
+            throw new DomainException(WorkOrderErrors.AssetIdRequired);
+
+        return new(Guid.NewGuid(), assetId, title, location, WorkOrderStatus.Open);
+    }
+
+    internal void AssignTechnician(Guid technicianId)
+    {
+        if (Status is WorkOrderStatus.Cancelled or WorkOrderStatus.Completed)
+            throw new DomainException(WorkOrderErrors.InvalidStateTransition);
+
+        if (TechnicianId != null && TechnicianId != technicianId)
+            Raise(new TechnicianUnAssignedEvent(TechnicianId.GetValueOrDefault(), Id));
+
+        TechnicianId = technicianId;
+
+        Status = Status == WorkOrderStatus.Open ? WorkOrderStatus.Assigned : Status;
+
+        Raise(new WorkOrderAssignedEvent(Id, technicianId));
+    }
+
+    internal void UnAssignTechnician()
+    {
+        TechnicianId = null;
+
+        Status = WorkOrderStatus.Open;
+    }
+
+    internal Guid AddStep(string description)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+            throw new DomainException(WorkOrderErrors.DescriptionRequired);
+
+        var step = TaskStep.Create(description);
+        _steps.Add(step);
+
+        return step.Id;
+    }
+
+    internal void CompleteStep(Guid stepId)
+    {
+        var step = _steps.FirstOrDefault(s => s.Id == stepId);
+
+        if (step == null)
+            throw new DomainException(WorkOrderErrors.StepNotFound);
+
+        step.MarkCompleted();
+    }
+
+    internal void AddComment(string text, Guid authorId)
+    {
+        if (string.IsNullOrWhiteSpace(text)) throw new DomainException(WorkOrderErrors.TextRequired);
+        _comments.Add(Comment.Create(text, authorId));
+    }
+
+    internal void Start()
+    {
+        if (Status != WorkOrderStatus.Assigned)
+            throw new DomainException(WorkOrderErrors.InvalidStateTransition);
+
+        Status = WorkOrderStatus.InProgress;
+    }
+
+    internal void Complete()
+    {
+        if (Status != WorkOrderStatus.InProgress)
+            throw new DomainException(WorkOrderErrors.InvalidStateTransition);
+
+        if (Steps.Count > 0 && Steps.Any(s => !s.Completed))
+            throw new DomainException(WorkOrderErrors.StepsNotCompleted);
+
+        Status = WorkOrderStatus.Completed;
+
+        Raise(new WorkOrderCompletedEvent(Id, AssetId, TechnicianId.GetValueOrDefault()));
+    }
+
+    internal void Cancel()
+    {
+        if (Status == WorkOrderStatus.Completed)
+            throw new DomainException(WorkOrderErrors.InvalidStateTransition);
+
+        Status = WorkOrderStatus.Cancelled;
+    }
+
+    internal void RevertCompletion()
+    {
+        if (Status != WorkOrderStatus.Completed)
+            throw new DomainException(WorkOrderErrors.InvalidStateTransition);
+
+        Status = WorkOrderStatus.InProgress;
+    }
+}
+
+
+
+
+
