@@ -20,11 +20,11 @@
     <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
+    <PackageReference Include="Mohd2sh.CleanArchitecture.Core.Application" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Contracts\CleanArchitecture.Cmms.Contracts.csproj" />
-    <ProjectReference Include="..\..\Core\CleanArchitecture.Core.Messaging\CleanArchitecture.Outbox.MassTransit.Bridge.csproj" />
   </ItemGroup>
 
   <ItemGroup>

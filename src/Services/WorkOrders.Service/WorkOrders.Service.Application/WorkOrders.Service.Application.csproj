@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\core\CleanArchitecture.Core.Application.Pipelines\CleanArchitecture.Core.Application.Pipelines.csproj" />
     <ProjectReference Include="..\WorkOrders.Service.Domain\WorkOrders.Service.Domain.csproj" />
   </ItemGroup>
 

@@ -1,9 +1,9 @@
 using CleanArchitecture.Core.Application;
 using CleanArchitecture.Core.Application.Abstractions.Events;
 using CleanArchitecture.Core.Application.Abstractions.Messaging;
+using CleanArchitecture.Core.Application.Pipelines;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using WorkOrders.Service.Application.Behaviors;
 
 namespace WorkOrders.Service.Application;
 

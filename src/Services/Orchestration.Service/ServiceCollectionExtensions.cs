@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
             x.AddSagaStateMachine<CompleteWorkOrderSaga, CompleteWorkOrderSagaState>()
                 .EntityFrameworkRepository(r =>
                 {
-                    r.ConcurrencyMode = ConcurrencyMode.Pessimistic;
+                    r.ConcurrencyMode = ConcurrencyMode.Optimistic;
                     r.AddDbContext<SagaDbContext, SagaDbContext>((provider, builder) =>
                     {
                         var configuration = provider.GetRequiredService<IConfiguration>();
@@ -58,7 +58,7 @@ public static class ServiceCollectionExtensions
             x.AddSagaStateMachine<AssignTechnicianSaga, AssignTechnicianSagaState>()
                 .EntityFrameworkRepository(r =>
                 {
-                    r.ConcurrencyMode = ConcurrencyMode.Pessimistic;
+                    r.ConcurrencyMode = ConcurrencyMode.Optimistic;
                     r.AddDbContext<SagaDbContext, SagaDbContext>((provider, builder) =>
                     {
                         var configuration = provider.GetRequiredService<IConfiguration>();
@@ -80,7 +80,6 @@ public static class ServiceCollectionExtensions
 
                 // Configure Quartz message scheduler for scheduled messages (saga timeouts)
                 // This enables Schedule() to work in sagas
-                // The Quartz endpoint is automatically configured by AddQuartzConsumers()
                 cfg.UseMessageScheduler(new Uri("queue:quartz"));
 
                 // Explicitly configure saga endpoints - sagas require explicit endpoint configuration
@@ -91,40 +90,31 @@ public static class ServiceCollectionExtensions
                 cfg.ReceiveEndpoint("assign-technician-saga", e =>
                 {
                     // Allow multiple messages for different saga instances
-                    // But limit to prevent too many unacknowledged messages
                     e.PrefetchCount = 10;
 
                     // Configure saga (Pessimistic concurrency mode ensures same instance is sequential)
                     // Message scheduler is configured at bus level (Quartz)
                     e.ConfigureSaga<AssignTechnicianSagaState>(context);
 
-                    // Configure retry policy with exponential backoff to prevent concurrent retries
                     e.UseMessageRetry(r =>
                     {
                         r.Ignore(typeof(DomainException));
                         r.Ignore(typeof(CleanArchitecture.Core.Application.Abstractions.Common.ApplicationException));
-                        // Use exponential backoff to space out retries
-                        // 3 retries: 2s, 4s, 8s (with max 30s, base 2s)
-                        r.Exponential(1, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(120), TimeSpan.FromSeconds(2));
+                        r.Exponential(1, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(2));
                     });
 
                     // Add logging to verify endpoint creation
                     var logger = context.GetRequiredService<ILoggerFactory>().CreateLogger("Orchestration.Service");
                     logger.LogInformation(
                         "[MASS TRANSIT] Configured receive endpoint 'assign-technician-saga' for AssignTechnicianSaga with PrefetchCount=10 and exponential retry");
-                    logger.LogInformation(
-                        "[MASS TRANSIT] Saga endpoint should automatically bind to events: WorkOrderAssignedEvent, TechnicianAssignmentValidatedEvent, TechnicianAssignmentFailedEvent, Fault<TechnicianAssignedEvent>");
                 });
 
                 // Configure CompleteWorkOrder saga endpoint
                 cfg.ReceiveEndpoint("complete-workorder-saga", e =>
                 {
                     // Allow multiple messages for different saga instances
-                    // But limit to prevent too many unacknowledged messages
                     e.PrefetchCount = 10;
 
-                    // Configure saga (Pessimistic concurrency mode ensures same instance is sequential)
-                    // Message scheduler is configured at bus level (Quartz)
                     e.ConfigureSaga<CompleteWorkOrderSagaState>(context);
 
                     // Configure retry policy with exponential backoff to prevent concurrent retries
@@ -132,9 +122,7 @@ public static class ServiceCollectionExtensions
                     {
                         r.Ignore(typeof(DomainException));
                         r.Ignore(typeof(CleanArchitecture.Core.Application.Abstractions.Common.ApplicationException));
-                        // Use exponential backoff to space out retries
-                        // 3 retries: 2s, 4s, 8s (with max 30s, base 2s)
-                        r.Exponential(1, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(120), TimeSpan.FromSeconds(2));
+                        r.Exponential(1, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(2));
                     });
 
                     // Add logging to verify endpoint creation
@@ -143,7 +131,6 @@ public static class ServiceCollectionExtensions
                         "[MASS TRANSIT] Configured receive endpoint 'complete-workorder-saga' for CompleteWorkOrderSaga with PrefetchCount=10 and exponential retry");
                 });
 
-                // Configure other endpoints automatically (consumers, etc.)
                 cfg.ConfigureEndpoints(context);
 
                 // Configure message retry with exception filtering
@@ -153,8 +140,7 @@ public static class ServiceCollectionExtensions
                     r.Ignore(typeof(DomainException));
                     r.Ignore(typeof(CleanArchitecture.Core.Application.Abstractions.Common.ApplicationException));
 
-                    // Retry 3 times for general exceptions (transient failures like database timeouts)
-                    r.Interval(1, TimeSpan.FromSeconds(120));
+                    r.Interval(1, TimeSpan.FromSeconds(30));
                 });
             });
         });
