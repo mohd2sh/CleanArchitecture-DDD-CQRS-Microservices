@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>Microservices Clean Architecture CQRS DDD - .NET 8 Evolution Example</title>
+    <meta name="description" content="Complete .NET 8 microservices architecture demonstrating evolution from monolithic DDD/CQRS template to distributed system. Learn Clean Architecture, CQRS, DDD, Saga patterns, Outbox pattern, and event-driven architecture with real CMMS implementation.">
+    <meta name="keywords" content=".NET microservices, Clean Architecture .NET, CQRS DDD .NET, Microservices patterns, Event-driven architecture .NET, Saga pattern .NET, Outbox pattern .NET, Domain-Driven Design .NET, Monolith to microservices migration, Evolutionary architecture .NET, Microservices evolution">
+    <meta name="author" content="Mohammad Shakhtour">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Microservices Clean Architecture CQRS DDD - .NET 8 Evolution Example">
+    <meta property="og:description" content="Complete .NET 8 microservices architecture demonstrating evolution from monolithic DDD/CQRS template to distributed system.">
+    <meta property="og:url" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/">
+    <meta property="og:image" content="https://mohd2sh.github.ioCleanArchitecture-DDD-CQRS-Microservices/assets/images/HighLevelArch.png">
+    <meta property="og:site_name" content="Microservices Clean Architecture CQRS DDD">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Microservices Clean Architecture CQRS DDD - .NET 8 Evolution">
+    <meta name="twitter:description" content="Complete .NET 8 microservices architecture demonstrating evolution from monolithic DDD/CQRS template to distributed system.">
+    <meta name="twitter:image" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/assets/images/HighLevelArch.png">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Microservices Clean Architecture CQRS DDD",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": ".NET 8",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Person",
+            "name": "Mohammad Shakhtour",
+            "url": "https://github.com/mohd2sh"
+        },
+        "codeRepository": "https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/",
+        "programmingLanguage": "C#",
+        "runtimePlatform": ".NET 8"
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CodeRepository",
+        "name": "Company.Cmms",
+        "url": "https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/",
+        "description": "Complete .NET 8 microservices architecture demonstrating evolution from monolithic DDD/CQRS template to distributed system.",
+        "programmingLanguage": "C#",
+        "license": "MIT"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="container">
+                <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/" class="logo">Microservices Architecture</a>
+                <div class="nav-links">
+                    <a href="#evolution">Evolution</a>
+                    <a href="#architecture">Architecture</a>
+                    <a href="#features">Features</a>
+                    <a href="#quickstart">Quick Start</a>
+                    <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/" class="btn-primary">View on GitHub</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Evolution from Monolith to Microservices</h1>
+                <p class="hero-subtitle">Complete .NET 8 microservices architecture demonstrating the evolutionary journey from monolithic DDD/CQRS template to distributed system</p>
+                <div class="hero-actions">
+                    <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/" class="btn btn-large">View on GitHub</a>
+                    <a href="#quickstart" class="btn btn-large btn-secondary">Get Started</a>
+                </div>
+                <div class="hero-badges">
+                    <span class="badge">.NET 8</span>
+                    <span class="badge">Clean Architecture</span>
+                    <span class="badge">CQRS</span>
+                    <span class="badge">DDD</span>
+                    <span class="badge">Microservices</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="evolution" class="evolution">
+            <div class="container">
+                <h2>The Evolutionary Journey</h2>
+                <p class="section-intro">This repository demonstrates the migration journey from the original template. The original template was designed with microservices in mind, which made the migration straightforward.</p>
+                
+                <div class="evolution-grid">
+                    <div class="evolution-item">
+                        <div class="evolution-number">1</div>
+                        <h3>Outbox Pattern Abstraction</h3>
+                        <p>The original template implemented <code>IOutboxStore</code> and <code>IOutboxPublisher</code> abstractions. This made swapping from in-process handlers to message bus integration trivial. The same code that worked in-process now publishes to RabbitMQ via MassTransit.</p>
+                    </div>
+                    <div class="evolution-item">
+                        <div class="evolution-number">2</div>
+                        <h3>Event-Driven Architecture</h3>
+                        <p>The dual handler system (<code>IDomainEventHandler</code> for transactional events, <code>IIntegrationEventHandler</code> for async events) translated directly to microservices. Integration events that were handled in-process now flow through the message bus to other services.</p>
+                    </div>
+                    <div class="evolution-item">
+                        <div class="evolution-number">3</div>
+                        <h3>Bounded Context Isolation</h3>
+                        <p>Architecture tests enforced strict boundaries between bounded contexts. When we split into services, these boundaries were already respected, preventing cross-service coupling.</p>
+                    </div>
+                    <div class="evolution-item">
+                        <div class="evolution-number">4</div>
+                        <h3>Database-Per-Service Structure</h3>
+                        <p>The original template used separate database schema for each domain, with no direct reference between domains/schemas. This structure naturally evolved into database-per-service.</p>
+                    </div>
+                    <div class="evolution-item">
+                        <div class="evolution-number">5</div>
+                        <h3>Clean Separation of Concerns</h3>
+                        <p>Domain, Application, and Infrastructure layers were clearly separated. Each service maintains this structure independently, preserving architectural boundaries.</p>
+                    </div>
+                    <div class="evolution-item">
+                        <div class="evolution-number">6</div>
+                        <h3>Architecture Tests</h3>
+                        <p>Automated tests enforced boundaries at compile-time. These same tests now ensure services don't accidentally depend on each other's internals.</p>
+                    </div>
+                </div>
+                
+                <div class="evolution-cta">
+                    <p>Explore the original template that enabled this evolution:</p>
+                    <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS" class="btn">View Original Template</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="container">
+                <h2>Key Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>Clean Architecture</h3>
+                        <p>Domain, Application, Infrastructure, and API layers with clear separation of concerns</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>CQRS Pattern</h3>
+                        <p>Command Query Responsibility Segregation with separate read and write models</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Domain-Driven Design</h3>
+                        <p>Rich domain models with aggregates, entities, value objects, and domain events</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Event-Driven Architecture</h3>
+                        <p>Asynchronous communication via events through RabbitMQ message bus</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Saga Orchestration</h3>
+                        <p>Distributed workflows coordinated by orchestration service with compensation</p>
+                    </div>
+                        <h3>Outbox Pattern</h3>
+                        <p>Guaranteed event delivery with transactional outbox and MassTransit bridge</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Database-Per-Service</h3>
+                        <p>Each service owns its data ensuring autonomy and independent scaling</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Docker Compose Ready</h3>
+                        <p>Complete Docker Compose setup for local development and testing</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture" class="architecture">
+            <div class="container">
+                <h2>System Architecture</h2>
+                <p class="section-intro">The system architecture demonstrates a microservices implementation with four main services, each following Clean Architecture principles.</p>
+                
+                <div class="architecture-diagram">
+                    <img src="assets/images/HighLevelArch.png" alt="High-level microservices architecture diagram showing API Gateway, four microservices (WorkOrders, Assets, Technicians, Orchestration), RabbitMQ message bus, and SQL Server databases" loading="lazy">
+                </div>
+                
+                <div class="services-grid">
+                    <div class="service-card">
+                        <h3>WorkOrders Service</h3>
+                        <p>Manages work order lifecycle, handles creation, assignment, and completion. Publishes events when work orders are created, assigned, or completed.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Assets Service</h3>
+                        <p>Manages asset information and maintenance status. Responds to work order events to update asset status and tracks maintenance history.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Technicians Service</h3>
+                        <p>Manages technician information and availability. Handles assignment tracking and validates technician assignments.</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>Orchestration Service</h3>
+                        <p>Manages distributed workflows using saga pattern. Coordinates multi-step operations across services and handles compensation for failed operations.</p>
+                    </div>
+                </div>
+                
+                <div class="architecture-flow">
+                    <h3>Assign Technician Flow</h3>
+                    <img src="assets/images/AssignTechnicianFlow.png" alt="Sequence diagram showing the complete flow for assigning a technician to a work order, demonstrating outbox pattern, saga orchestration, and eventual consistency" loading="lazy">
+                    <p>This diagram illustrates the complete flow for assigning a technician to a work order, demonstrating the outbox pattern for guaranteed delivery, saga orchestration for distributed transactions, and eventual consistency across services.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="tech-stack">
+            <div class="container">
+                <h2>Technology Stack</h2>
+                <div class="tech-grid">
+                    <div class="tech-item">.NET 8</div>
+                    <div class="tech-item">MassTransit</div>
+                    <div class="tech-item">RabbitMQ</div>
+                    <div class="tech-item">SQL Server</div>
+                    <div class="tech-item">Docker</div>
+                    <div class="tech-item">Entity Framework Core</div>
+                    <div class="tech-item">Dapper</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="quickstart" class="quickstart">
+            <div class="container">
+                <h2>Quick Start</h2>
+                
+                <div class="quickstart-section">
+                    <h3>Prerequisites</h3>
+                    <ul>
+                        <li>.NET 8 SDK</li>
+                        <li>Docker Desktop</li>
+                        <li>Visual Studio 2022 or VS Code</li>
+                    </ul>
+                </div>
+                
+                <div class="quickstart-section">
+                    <h3>Docker Compose</h3>
+                    <p>The easiest way to run all services:</p>
+                    <pre><code>git clone https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/.git
+cd Company.Cmms
+docker-compose up</code></pre>
+                    <p><strong>Access:</strong></p>
+                    <ul>
+                        <li>API Gateway: http://localhost:8000</li>
+                        <li>Swagger UI: http://localhost:8081</li>
+                        <li>RabbitMQ Management: http://localhost:15672 (guest/guest)</li>
+                    </ul>
+                </div>
+                
+                <div class="quickstart-section">
+                    <h3>Local Development</h3>
+                    <p>Run services individually:</p>
+                    <pre><code># WorkOrders Service
+cd src/services/WorkOrders.Service/CleanArchitecture.Cmms.Api.WorkOrders
+dotnet run
+
+# Assets Service
+cd src/services/Assets.Service/CleanArchitecture.Cmms.Api.Assets
+dotnet run
+
+# Technicians Service
+cd src/services/Technicians.Service/CleanArchitecture.Cmms.Api.Technicians
+dotnet run</code></pre>
+                    <p>Each service requires SQL Server and RabbitMQ connection strings configured in appsettings.json.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="adrs">
+            <div class="container">
+                <h2>Architectural Decision Records</h2>
+                <p>The repository includes detailed ADRs documenting key architectural decisions:</p>
+                <ul>
+                    <li><a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/blob/main/docs/architectural-decisions/ADR-007-message-bus-framework-selection.md">ADR-007: Message Bus and Saga Orchestration Framework Selection</a> - MassTransit vs NServiceBus comparison</li>
+                    <li><a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/blob/main/docs/architectural-decisions/ADR-008-cross-service-query-patterns.md">ADR-008: Cross-Service Query Patterns</a> - Options for querying data across service boundaries</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Built to demonstrate microservices architecture patterns in .NET</p>
+            <p>
+                <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices">GitHub</a> |
+                <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/blob/main/LICENSE">MIT License</a> |
+                <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/issues">Issues</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
+

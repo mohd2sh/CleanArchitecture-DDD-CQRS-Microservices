@@ -13,6 +13,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Mohd2sh.CleanArchitecture.Core.Application" Version="1.0.1" />
+    <PackageReference Include="Mohd2sh.CleanArchitecture.Outbox.Abstractions" Version="1.0.1" />
     <PackageReference Include="Respawn" Version="6.2.1" />
     <PackageReference Include="Testcontainers" Version="4.8.1" />
     <PackageReference Include="Testcontainers.MsSql" Version="4.8.1" />
@@ -22,8 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CleanArchitecture.Outbox\CleanArchitecture.Outbox.csproj" />
-    <ProjectReference Include="..\..\CleanArchitecture.Outbox.Abstractions\CleanArchitecture.Outbox.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\core\CleanArchitecture.Core.Application\CleanArchitecture.Core.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
