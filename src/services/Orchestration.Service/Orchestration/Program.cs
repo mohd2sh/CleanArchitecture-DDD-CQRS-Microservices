@@ -18,14 +18,13 @@ public class Program
             Log.Information("Starting up Orchestration Service");
 
             var builder = Host.CreateApplicationBuilder(args);
-            //TODO
+
             builder.Logging.AddSerilog();
 
             builder.Services.AddOrchestration(builder.Configuration);
 
             var host = builder.Build();
 
-            // Apply database migrations in development
             if (host.Services.GetRequiredService<IHostEnvironment>().IsDevelopment())
             {
                 using var scope = host.Services.CreateScope();

@@ -1,4 +1,4 @@
-# Clean Architecture CMMS: Microservices Migration
+# Microservices Clean Architecture CQRS DDD
 
 A .NET 8 microservices architecture demonstrating the evolution from a monolithic DDD/CQRS template to a fully distributed system. This repository showcases how the original template's design decisions enabled a smooth migration to microservices.
 
@@ -62,26 +62,13 @@ The system architecture demonstrates a microservices implementation with four ma
 
 Each service follows Clean Architecture with Domain, Application, Infrastructure, and API layers. Services maintain their own databases (`WorkOrdersDb`, `AssetsDb`, `TechniciansDb`, `OrchestrationDb`) ensuring service autonomy and independent scaling.
 
-The architecture includes:
-- **API Gateway Layer**: Kong for routing and unified API documentation
-- **Microservices Layer**: Four independent services each following Clean Architecture
-- **Messaging Infrastructure**: RabbitMQ message bus with MassTransit bridge and shared event contracts
-- **Data Layer**: Database-per-service pattern with separate write and read databases
-
 Services communicate asynchronously via events through the message bus. The Orchestration Service manages distributed workflows using the Saga pattern.
 
 ### Assign Technician Flow
 
 ![Assign Technician Flow](docs/diagrams/AssignTechnicianFlow.png)
 
-This diagram illustrates the complete flow for assigning a technician to a work order:
-1. API request routed through API Gateway to WorkOrders Service
-2. Work order updated and event written to outbox (same transaction)
-3. Outbox processor publishes event to RabbitMQ
-4. Orchestration Service (Saga) receives event and orchestrates the workflow
-5. Saga publishes event to Technicians Service for validation
-6. Technicians Service validates and responds
-7. Saga finalizes upon successful validation
+This diagram illustrates the complete flow for assigning a technician to a work order.
 
 The flow demonstrates the outbox pattern for guaranteed delivery, saga orchestration for distributed transactions, and eventual consistency across services.
 
@@ -171,83 +158,20 @@ We have a separate demo repository showing the CDC approach with Debezium.
 
 ## Local Infrastructure Components
 
-### API Gateway (Kong)
+#### API Gateway (Kong)
+Kong routes requests to the appropriate service
 
-Kong routes requests to the appropriate service:
-- `/api/v1/workorders` → WorkOrders Service
-- `/api/v1/assets` → Assets Service
-- `/api/v1/technicians` → Technicians Service
+#### Message Bus (RabbitMQ)
+RabbitMQ handles inter-service communication
 
-### Message Bus (RabbitMQ)
+##### Database
+SQL Server instances (one per service)
 
-RabbitMQ handles inter-service communication:
-- Events published to exchanges
-- Services consume from queues
-- Guaranteed delivery with retry
 
-### Database
+#### Docker Compose
 
-SQL Server instances (one per service):
-- Each service has its own database
-- Independent migrations
-- Service autonomy
 
-### Docker Compose
 
-All infrastructure is containerized:
-- Services run as containers
-- RabbitMQ, SQL Server, Kong included
-- Easy local development setup
-
-## Project Structure
-
-```
-src/
-├── core/                                    # Core Framework
-│   ├── CleanArchitecture.Core.Application
-│   ├── CleanArchitecture.Core.Domain
-│   ├── CleanArchitecture.Core.Infrastructure
-│   ├── CleanArchitecture.Core.Application.Pipelines
-│   └── CleanArchitecture.Core.Api
-│
-├── Contracts/                               # Shared Event Contracts
-│   └── CleanArchitecture.Cmms.Contracts
-│       ├── WorkOrders/Events/
-│       ├── Assets/Events/
-│       └── Technicians/Events/
-│
-├── outbox/                                   # Outbox Pattern
-│   ├── CleanArchitecture.Outbox.Abstractions
-│   ├── CleanArchitecture.Outbox
-│   └── CleanArchitecture.Outbox.MassTransit.Bridge
-│
-└── services/                                 # Microservices
-    ├── WorkOrders.Service/
-    │   ├── CleanArchitecture.Cmms.Domain.WorkOrders
-    │   ├── CleanArchitecture.Cmms.Application.WorkOrders
-    │   ├── CleanArchitecture.Cmms.Infrastructure.WorkOrders
-    │   └── CleanArchitecture.Cmms.Api.WorkOrders
-    │
-    ├── Assets.Service/
-    │   ├── CleanArchitecture.Cmms.Domain.Assets
-    │   ├── CleanArchitecture.Cmms.Application.Assets
-    │   ├── CleanArchitecture.Cmms.Infrastructure.Assets
-    │   └── CleanArchitecture.Cmms.Api.Assets
-    │
-    ├── Technicians.Service/
-    │   ├── CleanArchitecture.Cmms.Domain.Technicians
-    │   ├── CleanArchitecture.Cmms.Application.Technicians
-    │   ├── CleanArchitecture.Cmms.Infrastructure.Technicians
-    │   └── CleanArchitecture.Cmms.Api.Technicians
-    │
-    └── Orchestration.Service/
-        └── Orchestration/                   # Saga orchestration
-
-tests/
-├── [Service].Domain.UnitTests/
-├── [Service].Application.UnitTests/
-└── [Service].Api.IntegrationTests/
-```
 
 ## Key Design Decisions
 
@@ -292,11 +216,7 @@ Immutable event contracts shared across services:
 
 ## Architectural Decision Records
 
-The original template's ADRs (ADR-001 through ADR-006) documented foundational patterns that enabled this migration:
-- Outbox pattern
-- Domain vs Integration events
-- Cross-aggregate coordination
-- Error management
+The original template's ADRs (ADR-001 through ADR-006) documented foundational patterns that enabled this migration
 
 **New ADRs for microservices:**
 - [ADR-007: Message Bus and Saga Orchestration Framework Selection](docs/architectural-decisions/ADR-007-message-bus-framework-selection.md) - MassTransit vs NServiceBus comparison
@@ -319,13 +239,6 @@ git clone <repository-url>
 cd Company.Cmms
 docker-compose up
 ```
-
-**What's included:**
-- SQL Server container (shared instance, separate databases per service)
-- RabbitMQ container
-- Kong API Gateway
-- All microservices
-- Swagger UI (unified API documentation)
 
 **Access:**
 - API Gateway: http://localhost:8000

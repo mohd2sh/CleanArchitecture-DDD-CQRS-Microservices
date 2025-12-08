@@ -1,6 +1,6 @@
 # CleanArchitecture.Cmms.Contracts
 
-Shared message contracts for microservices communication.
+Shared message contracts for microservices communication. (Can be managed by Nuget when each microservice is in separate repository))
 
 ## Purpose
 

@@ -36,10 +36,8 @@ public static class ServiceCollectionExtensions
         // Register Core Infrastructure services (Mediator, Event Dispatchers)
         services.AddCoreInfrastructure();
 
-        // Register MassTransit messaging (for microservices)
-        // Note: Sagas are now handled by the Orchestration service
         var rabbitMqHost = config.GetConnectionString("RabbitMQ") ?? "rabbitmq://localhost";
-        services.AddRabbitMqMassTransitWithOutbox(rabbitMqHost, x =>
+        services.AddRabbitMqMassTransitWithOutbox(config, rabbitMqHost, x =>
         {
             x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("workorders", false));
 

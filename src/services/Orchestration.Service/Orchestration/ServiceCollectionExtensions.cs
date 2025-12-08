@@ -13,7 +13,6 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration config)
     {
-        // Register Saga DbContext
         services.AddDbContext<SagaDbContext>(opt =>
         {
             opt.UseSqlServer(
@@ -24,10 +23,8 @@ public static class ServiceCollectionExtensions
         services.AddQuartz(q =>
         {
             // Use a simple in-memory scheduler for now
-            // Can be configured with database persistence later if needed
         });
 
-        // Add Quartz hosted service to run the scheduler
         services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
         // Register MassTransit messaging (for microservices)
@@ -66,13 +63,15 @@ public static class ServiceCollectionExtensions
                     });
                 });
 
-            // Configure RabbitMQ
             x.UsingRabbitMq((context, cfg) =>
             {
+                var username = config["RabbitMQ:Username"] ?? "guest";
+                var password = config["RabbitMQ:Password"] ?? "guest";
+
                 cfg.Host(rabbitMqHost, h =>
                 {
-                    h.Username("guest");
-                    h.Password("guest");
+                    h.Username(username);
+                    h.Password(password);
                 });
 
                 cfg.UseMessageScheduler(new Uri("queue:quartz"));
@@ -80,11 +79,8 @@ public static class ServiceCollectionExtensions
                 // Configure AssignTechnician saga endpoint
                 cfg.ReceiveEndpoint("assign-technician-saga", e =>
                 {
-                    // Allow multiple messages for different saga instances
                     e.PrefetchCount = 10;
 
-                    // Configure saga (Pessimistic concurrency mode ensures same instance is sequential)
-                    // Message scheduler is configured at bus level (Quartz)
                     e.ConfigureSaga<AssignTechnicianSagaState>(context);
 
                     e.UseMessageRetry(r =>
@@ -97,18 +93,15 @@ public static class ServiceCollectionExtensions
                     // Add logging to verify endpoint creation
                     var logger = context.GetRequiredService<ILoggerFactory>().CreateLogger("Orchestration.Service");
                     logger.LogInformation(
-                        "[MASS TRANSIT] Configured receive endpoint 'assign-technician-saga' for AssignTechnicianSaga with PrefetchCount=10 and exponential retry");
+                        "[MASS TRANSIT] Configured receive endpoint 'assign-technician-saga' for AssignTechnicianSaga");
                 });
 
-                // Configure CompleteWorkOrder saga endpoint
                 cfg.ReceiveEndpoint("complete-workorder-saga", e =>
                 {
-                    // Allow multiple messages for different saga instances
                     e.PrefetchCount = 10;
 
                     e.ConfigureSaga<CompleteWorkOrderSagaState>(context);
 
-                    // Configure retry policy with exponential backoff to prevent concurrent retries
                     e.UseMessageRetry(r =>
                     {
                         r.Ignore(typeof(DomainException));
@@ -116,15 +109,13 @@ public static class ServiceCollectionExtensions
                         r.Exponential(1, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(2));
                     });
 
-                    // Add logging to verify endpoint creation
                     var logger = context.GetRequiredService<ILoggerFactory>().CreateLogger("Orchestration.Service");
                     logger.LogInformation(
-                        "[MASS TRANSIT] Configured receive endpoint 'complete-workorder-saga' for CompleteWorkOrderSaga with PrefetchCount=10 and exponential retry");
+                        "[MASS TRANSIT] Configured receive endpoint 'complete-workorder-saga' for CompleteWorkOrderSaga");
                 });
 
                 cfg.ConfigureEndpoints(context);
 
-                // Configure message retry with exception filtering
                 cfg.UseMessageRetry(r =>
                 {
                     // Skip retries for domain/application exceptions (business rule violations)

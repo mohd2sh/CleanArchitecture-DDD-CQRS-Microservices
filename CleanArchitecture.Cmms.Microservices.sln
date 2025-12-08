@@ -83,7 +83,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanArchitecture.Cmms.Api.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5CC826D5-7F13-4745-8094-518EE4A689A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanArchitecture.Outbox.IntegrationTests", "..\Users\mohd2\Documents\GitHub\Company.Cmms\src\outbox\tests\CleanArchitecture.Outbox.IntegrationTests\CleanArchitecture.Outbox.IntegrationTests.csproj", "{55EF1B5D-32AD-4E49-BC31-9DB0BBAB819E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanArchitecture.Outbox.IntegrationTests", "src\outbox\tests\CleanArchitecture.Outbox.IntegrationTests\CleanArchitecture.Outbox.IntegrationTests.csproj", "{55EF1B5D-32AD-4E49-BC31-9DB0BBAB819E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

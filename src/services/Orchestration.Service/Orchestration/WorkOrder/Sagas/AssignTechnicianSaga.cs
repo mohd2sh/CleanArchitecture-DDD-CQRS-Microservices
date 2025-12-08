@@ -99,7 +99,7 @@ public class AssignTechnicianSaga : MassTransitStateMachine<AssignTechnicianSaga
                         context.Saga.TechnicianId,
                         context.Saga.WorkOrderId);
 
-                    // Publish compensation event to WorkOrders service
+                    // Publish compensation event
                     context.Publish(message: new WorkOrderAssignmentFailedEvent(
                          context.Saga.WorkOrderId,
                         context.Saga.TechnicianId

@@ -35,22 +35,16 @@ public static class ServiceCollectionExtensions
 
         // Register MassTransit messaging (for microservices)
         var rabbitMqHost = config.GetConnectionString("RabbitMQ") ?? "rabbitmq://localhost";
-        services.AddRabbitMqMassTransitWithOutbox(rabbitMqHost, x =>
+        services.AddRabbitMqMassTransitWithOutbox(config, rabbitMqHost, x =>
         {
             x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("assets", false));
 
-            // Register consumers for integration events from WorkOrders service
             x.AddConsumer<IntegrationEventConsumer<WorkOrderCreatedEvent>>();
 
-            // Note: WorkOrderCompletedEvent is now handled by Saga, but we keep the consumer
-            // as a fallback for backward compatibility or direct event handling
             x.AddConsumer<IntegrationEventConsumer<WorkOrderCompletedEvent>>();
 
-            // Register consumer for WorkOrderCompletionRequestedEvent from Saga orchestrator
             x.AddConsumer<IntegrationEventConsumer<WorkOrderCompletionRequestedEvent>>();
 
-            // Register command consumers for Saga orchestration (kept for backward compatibility)
-            //x.AddConsumer<CompleteAssetMaintenanceCommandHandler>();
 
         });
 
