@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IOutboxProcessor, OutboxMessageProcessor>();
 
         // Register multiple worker instances for parallel processing
-        for (int i = 0; i < options.WorkerCount; i++)
+        for (var i = 0; i < options.WorkerCount; i++)
         {
             var workerId = i + 1;
             services.AddSingleton<IHostedService>(sp => new OutboxProcessor(

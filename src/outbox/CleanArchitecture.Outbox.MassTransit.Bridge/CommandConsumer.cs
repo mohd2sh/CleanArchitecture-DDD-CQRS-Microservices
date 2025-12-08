@@ -78,4 +78,3 @@ public sealed class CommandConsumer<TCommand> : IConsumer<TCommand>
     }
 }
 
-

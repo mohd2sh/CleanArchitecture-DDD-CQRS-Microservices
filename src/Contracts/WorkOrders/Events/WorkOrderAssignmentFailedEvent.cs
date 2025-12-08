@@ -10,4 +10,3 @@ public sealed record WorkOrderAssignmentFailedEvent(
     Guid TechnicianId,
     DateTime? OccurredOn = null) : IDomainEvent;
 
-

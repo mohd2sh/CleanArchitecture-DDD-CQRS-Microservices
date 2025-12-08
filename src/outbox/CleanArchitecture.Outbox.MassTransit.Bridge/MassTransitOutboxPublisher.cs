@@ -49,7 +49,3 @@ public sealed class MassTransitOutboxPublisher : IOutboxPublisher
     }
 }
 
-
-
-
-

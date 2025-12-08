@@ -39,4 +39,3 @@ public sealed class ValidationPipeline<TRequest, TResponse> : IPipeline<TRequest
     }
 }
 
-

@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CleanArchitecture.Outbox.Processing.Wrappers;
 
-
 internal sealed class OutboxPublisherWrapper<TEvent> : OutboxPublisherWrapperBase
     where TEvent : class
 {

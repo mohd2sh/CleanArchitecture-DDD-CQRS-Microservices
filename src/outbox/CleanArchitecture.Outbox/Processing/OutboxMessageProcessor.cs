@@ -40,7 +40,7 @@ public sealed class OutboxMessageProcessor : IOutboxProcessor
     public async Task ProcessOutboxMessagesAsync(CancellationToken cancellationToken = default)
     {
         const int batchSize = 10;
-        int processedCount = 0;
+        var processedCount = 0;
 
         // Process one record at a time up to batchSize
         // Each message is locked during processing, preventing duplicate processing
@@ -66,7 +66,6 @@ public sealed class OutboxMessageProcessor : IOutboxProcessor
                 }
 
                 messageId = message.Id;
-
 
                 await outboxStore.MarkAsProcessedAsync(message.Id, cancellationToken);
 

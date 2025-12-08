@@ -66,8 +66,3 @@ public sealed class IntegrationEventConsumer<TEvent> : IConsumer<TEvent>
     }
 }
 
-
-
-
-
-

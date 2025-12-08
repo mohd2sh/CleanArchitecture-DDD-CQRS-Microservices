@@ -40,4 +40,3 @@ public class LoggingPipeline<TRequest, TResult> : IPipeline<TRequest, TResult> w
     }
 }
 
-

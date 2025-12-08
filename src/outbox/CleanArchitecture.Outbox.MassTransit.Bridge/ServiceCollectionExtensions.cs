@@ -34,7 +34,6 @@ public static class ServiceCollectionExtensions
                     h.Password("guest");
                 });
 
-
                 // Configure endpoints (discovers consumers automatically)
                 cfg.ConfigureEndpoints(context);
 

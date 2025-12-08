@@ -1,0 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+
+namespace CleanArchitecture.Cmms.Infrastructure.WorkOrders.Persistence.EfCore;
+
+public sealed class WriteDbContext : WorkOrdersDbContextBase
+{
+    public WriteDbContext(DbContextOptions<WriteDbContext> options) : base(options) { }
+}
+

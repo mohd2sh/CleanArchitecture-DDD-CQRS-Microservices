@@ -13,6 +13,21 @@ jobs:
   build-docker:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      matrix:
+        include:
+          - service-name: workorders-service
+            dockerfile: src/services/WorkOrders.Service/CleanArchitecture.Cmms.Api.WorkOrders/Dockerfile
+            image-name: cmms-workorders-service
+          - service-name: assets-service
+            dockerfile: src/services/Assets.Service/CleanArchitecture.Cmms.Api.Assets/Dockerfile
+            image-name: cmms-assets-service
+          - service-name: technicians-service
+            dockerfile: src/services/Technicians.Service/CleanArchitecture.Cmms.Api.Technicians/Dockerfile
+            image-name: cmms-technicians-service
+          - service-name: orchestration-service
+            dockerfile: src/services/Orchestration.Service/Orchestration/Dockerfile
+            image-name: cmms-orchestration-service
 
     steps:
       - name: Checkout code
@@ -22,10 +37,10 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image
-        run: docker build -f src/CleanArchitecture.Cmms.Api/Dockerfile -t cmms-api:test .
+        run: |
+          docker build -f ${{ matrix.dockerfile }} -t ${{ matrix.image-name }}:test .
 
       - name: Verify build
         run: |
-          docker images cmms-api:test
-          echo "Docker build completed successfully"
-
+          docker images ${{ matrix.image-name }}:test
+          echo "Docker build completed successfully for ${{ matrix.service-name }}"

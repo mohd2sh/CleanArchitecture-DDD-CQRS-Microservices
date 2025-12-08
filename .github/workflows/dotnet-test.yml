@@ -25,15 +25,20 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore CleanArchitecture.Cmms.Microservices.sln
 
       - name: Build solution
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build CleanArchitecture.Cmms.Microservices.sln --configuration Release --no-restore
 
-      - name: Run tests
+      - name: Run unit tests
         run: |
-          dotnet test tests/CleanArchitecture.Cmms.Domain.UnitTests/CleanArchitecture.Cmms.Domain.UnitTests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage" --logger "trx;LogFileName=domain_unit_tests.trx"
-          dotnet test tests/CleanArchitecture.Cmms.Application.UnitTests/CleanArchitecture.Cmms.Application.UnitTests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage" --logger "trx;LogFileName=application_unit_tests.trx"
+          dotnet test CleanArchitecture.Cmms.Microservices.sln 
+            --configuration Release 
+            --no-build 
+            --filter "FullyQualifiedName~UnitTests" 
+            --collect:"XPlat Code Coverage" 
+            --logger "trx;LogFileName=unit_tests.trx"
+            --verbosity normal
 
       - name: Upload Test Artifacts
         if: always()

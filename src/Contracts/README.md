@@ -4,23 +4,12 @@ Shared message contracts for microservices communication.
 
 ## Purpose
 
-This project contains event and command contracts that are shared across microservices. These contracts define the message schema for inter-service communication via MassTransit/RabbitMQ.
-
-## Structure
-
-```
-Contracts/
-├── Events/          # Integration events (broadcast)
-└── Commands/        # Commands (point-to-point)
-```
+This project contains event contracts that are shared across microservices. These contracts define the message schema for inter-service communication via Bus Transport.
 
 ## Events
 
 Events are published to exchanges (topic-based, broadcast to all subscribers).
 
-## Commands
-
-Commands are sent to queues (point-to-point, single consumer).
 
 ## Versioning
 

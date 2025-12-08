@@ -41,4 +41,3 @@ public sealed class TransactionCommandPipeline<TCommand, TResult> : ICommandPipe
     }
 }
 
-

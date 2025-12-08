@@ -1,0 +1,63 @@
+using CleanArchitecture.Cmms.Domain.Assets.Entities;
+using CleanArchitecture.Core.Domain.Abstractions;
+
+namespace CleanArchitecture.Cmms.Domain.Assets.UnitTests.Entities;
+
+public class MaintenanceRecordTests
+{
+    [Fact]
+    public void Create_Should_Set_All_Properties()
+    {
+        // Arrange
+        var assetId = Guid.NewGuid();
+        var workOrderId = Guid.NewGuid();
+        var startedOn = DateTime.UtcNow;
+        var description = "Filter Replacement";
+        var performedBy = "Technician X";
+
+        // Act
+        var record = MaintenanceRecord.Create(assetId, workOrderId, startedOn, description, performedBy);
+
+        // Assert
+        Assert.Equal(assetId, record.AssetId);
+        Assert.Equal(workOrderId, record.WorkOrderId);
+        Assert.Equal(startedOn, record.StartedOn);
+        Assert.Equal(description, record.Description);
+        Assert.Equal(performedBy, record.PerformedBy);
+    }
+
+    [Fact]
+    public void Create_Should_Throw_When_Description_Is_Empty()
+    {
+        // Arrange
+        var assetId = Guid.NewGuid();
+        var workOrderId = Guid.NewGuid();
+        var startedOn = DateTime.UtcNow;
+        var emptyDescription = " ";
+        var performedBy = "Tech";
+
+        // Act
+        void act() => MaintenanceRecord.Create(assetId, workOrderId, startedOn, emptyDescription, performedBy);
+
+        // Assert
+        Assert.Throws<DomainException>(act);
+    }
+
+    [Fact]
+    public void Create_Should_Throw_When_PerformedBy_Is_Empty()
+    {
+        // Arrange
+        var assetId = Guid.NewGuid();
+        var workOrderId = Guid.NewGuid();
+        var startedOn = DateTime.UtcNow;
+        var description = "Description";
+        var emptyPerformer = " ";
+
+        // Act
+        void act() => MaintenanceRecord.Create(assetId, workOrderId, startedOn, description, emptyPerformer);
+
+        // Assert
+        Assert.Throws<DomainException>(act);
+    }
+}
+
