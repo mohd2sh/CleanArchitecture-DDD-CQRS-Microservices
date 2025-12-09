@@ -3,6 +3,8 @@ name: Outbox Integration Tests
 on:
   pull_request:
     branches: [ develop, main ]
+  push:
+    branches: [ main ]
 
 concurrency:
   group: outbox-integration-tests-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -39,12 +41,7 @@ jobs:
         run: dotnet build CleanArchitecture.Cmms.Microservices.sln --configuration Release --no-restore
 
       - name: Test (Outbox Integration)
-        run: >
-          dotnet test src/outbox/tests/CleanArchitecture.Outbox.IntegrationTests/CleanArchitecture.Outbox.IntegrationTests.csproj
-          --configuration Release
-          --no-build
-          --logger "trx;LogFileName=outbox-integration.trx"
-          --collect:"XPlat Code Coverage"
+        run: dotnet test src/outbox/tests/CleanArchitecture.Outbox.IntegrationTests/CleanArchitecture.Outbox.IntegrationTests.csproj --configuration Release --no-build --logger "trx;LogFileName=outbox-integration.trx" --collect:"XPlat Code Coverage"
 
       - name: Upload Test Results
         if: always()

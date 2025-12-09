@@ -3,6 +3,8 @@ name: Integration Tests
 on:
   pull_request:
     branches: [ develop, main ]
+  push:
+    branches: [ main ]
 
 concurrency:
   group: integration-tests-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -39,13 +41,7 @@ jobs:
         run: dotnet build CleanArchitecture.Cmms.Microservices.sln --configuration Release --no-restore
 
       - name: Test (Integration)
-        run: >
-          dotnet test CleanArchitecture.Cmms.Microservices.sln
-          --configuration Release
-          --no-build
-          --filter "FullyQualifiedName~IntegrationTests"
-          --logger "trx;LogFileName=integration.trx"
-          --collect:"XPlat Code Coverage"
+        run: dotnet test CleanArchitecture.Cmms.Microservices.sln --configuration Release --no-build --filter "FullyQualifiedName~IntegrationTests" --logger "trx;LogFileName=integration.trx" --collect:"XPlat Code Coverage"
 
       - name: Upload Test Results
         if: always()

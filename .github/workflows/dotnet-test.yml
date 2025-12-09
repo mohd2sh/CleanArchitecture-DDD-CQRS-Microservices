@@ -31,14 +31,7 @@ jobs:
         run: dotnet build CleanArchitecture.Cmms.Microservices.sln --configuration Release --no-restore
 
       - name: Run unit tests
-        run: |
-          dotnet test CleanArchitecture.Cmms.Microservices.sln 
-            --configuration Release 
-            --no-build 
-            --filter "FullyQualifiedName~UnitTests" 
-            --collect:"XPlat Code Coverage" 
-            --logger "trx;LogFileName=unit_tests.trx"
-            --verbosity normal
+        run: dotnet test CleanArchitecture.Cmms.Microservices.sln --configuration Release --no-build --filter "FullyQualifiedName~UnitTests" --collect:"XPlat Code Coverage" --logger "trx;LogFileName=unit_tests.trx" --verbosity normal
 
       - name: Upload Test Artifacts
         if: always()
