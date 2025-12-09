@@ -292,6 +292,161 @@ h3 {
     font-size: 0.95rem;
 }
 
+.feature-card h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.features-section {
+    margin-bottom: 3rem;
+}
+
+.features-section h3 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+}
+
+.architecture-tests {
+    background-color: var(--bg-primary);
+}
+
+.tests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.test-category {
+    background-color: var(--bg-tertiary);
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.test-category h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.test-category ul {
+    list-style: none;
+    padding: 0;
+}
+
+.test-category li {
+    padding: 0.5rem 0;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.test-category li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.test-category li:last-child {
+    border-bottom: none;
+}
+
+.benefits-section {
+    margin-top: 3rem;
+}
+
+.benefits-section h3 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.benefit-item {
+    background-color: var(--bg-tertiary);
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.benefit-item h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--primary-color);
+}
+
+.benefit-item p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.philosophy {
+    background-color: var(--bg-secondary);
+}
+
+.philosophy-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 3rem;
+    margin-top: 2rem;
+}
+
+.philosophy-item {
+    background-color: var(--bg-tertiary);
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.philosophy-item h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.philosophy-item ul {
+    list-style: none;
+    padding: 0;
+}
+
+.philosophy-item li {
+    padding: 0.75rem 0;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.philosophy-item li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.philosophy-item li:last-child {
+    border-bottom: none;
+}
+
+.philosophy-item li strong {
+    color: var(--text-primary);
+}
+
 .architecture {
     background-color: var(--bg-primary);
 }
@@ -513,7 +668,10 @@ pre code {
     
     .evolution-grid,
     .features-grid,
-    .services-grid {
+    .services-grid,
+    .tests-grid,
+    .benefits-grid,
+    .philosophy-content {
         grid-template-columns: 1fr;
     }
     

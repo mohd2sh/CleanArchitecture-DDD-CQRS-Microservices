@@ -1,14 +1,25 @@
 # Microservices Clean Architecture CQRS DDD
 
-A .NET 8 microservices architecture demonstrating the evolution from a monolithic DDD/CQRS template to a fully distributed system. This repository showcases how the original template's design decisions enabled a smooth migration to microservices.
+![Integration Tests](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/actions/workflows/integration-tests.yml/badge.svg)
+![Outbox Integration Tests](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/actions/workflows/outbox-integration-tests.yml/badge.svg)
+![Unit & Architecture Tests](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/actions/workflows/dotnet-test.yml/badge.svg)
+![Docker Build](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/actions/workflows/docker-build.yml/badge.svg)
+
+A .NET 8 microservices architecture demonstrating Clean Architecture, Domain-Driven Design (DDD), and CQRS with automated architecture tests, integration tests, and event-driven distributed coordination. This repository provides a complete, functioning microservices implementation that teams can learn from and adapt.
 
 **Original Template:** [CleanArchitecture-DDD-CQRS](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS)
 
 ## Introduction
 
-This repository contains a **Computerized Maintenance Management System (CMMS)** implemented as microservices. It demonstrates a complete migration from the original monolithic template, showing how the foundational architecture patterns made this transition straightforward.
+This repository contains a **Computerized Maintenance Management System (CMMS)** implemented as microservices. It demonstrates how to build maintainable, testable, and scalable microservices using Clean Architecture, DDD, and CQRS patterns.
 
-**Note:** This solution contains all services in a single repository for architecture showcase purposes.
+The CMMS domain is perfect for demonstrating microservices patterns because it has:
+- **Clear business boundaries** (Work Orders, Technicians, Assets) that map to services
+- **Complex business rules** (assignment constraints, status transitions) requiring proper domain modeling
+- **Rich domain models** with encapsulated behavior
+- **Real-world scenarios** that teams can relate to
+
+**Note:** This solution contains all services in a single repository for architecture showcase purposes. Each service can be independently deployed and scaled.
 
 ### CMMS Domain Context
 
@@ -19,6 +30,60 @@ A CMMS system manages maintenance operations:
 - **Assignments** - Connections between technicians and work orders
 
 The system handles the complete maintenance lifecycle: creating work orders, assigning technicians, tracking progress, and completing work across distributed services.
+
+## Philosophy
+
+This repository demonstrates that implementing microservices with Clean Architecture, DDD, and CQRS doesn't have to be complex. It shows how to apply these patterns pragmatically in .NET—with enough structure to maintain boundaries and enable testing, but without over-engineering.
+
+**Perfect for:**
+- Teams building enterprise .NET microservices with CQRS and DDD
+- Developers learning how to implement microservices patterns
+- Architects evaluating microservices implementations
+- Technical leads enforcing architectural boundaries through automated tests
+
+### Design Principles
+
+- **Domain-First Design** - Business logic lives in the domain, not in services
+- **Explicit Boundaries** - Each layer and service has a clear purpose and dependency rules
+- **Testability by Design** - Every component can be tested in isolation
+- **Pragmatic CQRS** - Separate read/write models where it adds value
+- **Architectural Governance** - Automated tests prevent boundary violations
+- **Service Autonomy** - Each service owns its data and can evolve independently
+
+## Key Features Overview
+
+This repository includes implementations of enterprise patterns working together in a microservices architecture:
+
+### Core Architecture
+- Clean Architecture layers with dependency inversion (Domain, Application, Infrastructure, API)
+- DDD tactical patterns (Aggregates, Entities, Value Objects, Domain Events)
+- CQRS: EF Core for writes, Dapper for reads, flexible read sources
+- Repository pattern with Unit of Work
+- Custom Mediator: No MediatR dependency, full control over CQRS pipeline
+
+### Microservices Patterns
+- **Database-Per-Service** - Each service owns its database ensuring autonomy
+- **Event-Driven Communication** - Services communicate via events through RabbitMQ
+- **Outbox Pattern** - Guaranteed event delivery with at-least-once semantics
+- **Saga Orchestration** - Distributed workflows coordinated by orchestration service
+- **Shared Contracts** - Immutable event schemas for type safety across services
+
+### Event-Driven Architecture
+- **Dual Event Handlers**: `IDomainEventHandler` (transactional) + `IIntegrationEventHandler` (async)
+- **Outbox Pattern**: Guaranteed event delivery with transactional consistency
+- **Cross-service coordination** via integration events
+
+### Reliability & Consistency
+- Optimistic concurrency control with SQL Server RowVersion
+- Result pattern for consistent error handling
+- Pipeline behaviors (Validation, Transaction, Logging, Events)
+- Saga compensation for distributed transaction rollback
+
+### Quality & Documentation
+- **Architecture unit tests**: Automated tests enforcing DDD/Clean Architecture boundaries
+- **ADRs**: Documented architectural decisions — see [Architectural Decision Records](docs/architectural-decisions/)
+- **Unit tests** for Domain & Application layers across all services
+- **Integration tests**: Testcontainers-based end-to-end scenarios
 
 ## Architecture Diagrams
 
@@ -48,10 +113,70 @@ This diagram illustrates the complete flow for assigning a technician to a work 
 
 The flow demonstrates the outbox pattern for guaranteed delivery, saga orchestration for distributed transactions, and eventual consistency across services.
 
+## Architecture Tests
+
+The repository includes many **architecture tests** that automatically enforce DDD principles and Clean Architecture boundaries across all services. New team members can work confidently—architectural violations are caught at compile-time through automated tests.
+
+Architecture tests are available as a reusable NuGet package (`CleanArchitecture.Core.ArchitectureTests`) with base test classes that can be inherited in your projects.
+
+### Domain Layer Protection
+
+**Immutability & Encapsulation:**
+- `ValueObjects_Should_Be_Immutable` - No public setters allowed (init-only setters are OK)
+- `ValueObjects_Should_Be_Sealed` - Prevents inheritance and maintains invariants
+- `Aggregates_Should_Have_Internal_Or_Private_Constructors` - Enforces factory methods
+
+**Type Safety:**
+- `DomainEvents_Should_Be_Sealed_And_EndWith_Event` - Naming conventions enforced
+- `Domain_Types_Should_Be_Internal` - Prevents domain leakage to outer layers
+- `Domain_Should_Not_Depend_On_Other_Layers` - Dependency rule enforcement
+
+### Application Layer Boundaries
+
+**Layer Isolation:**
+- `Application_Should_Not_Depend_On_Infrastructure_Or_Api` - Clean Architecture enforcement
+- `Commands_And_Queries_Should_Be_Immutable` - CQRS contracts are immutable
+
+**Read/Write Separation:**
+- `QueryHandlers_Should_Not_Use_IRepository` - Queries forbidden from using write-side repositories
+- `CommandHandlers_Should_Not_Use_IReadRepository` - Commands forbidden from using read-side repositories
+- **Why:** Enforces CQRS separation at compile-time, prevents accidental coupling
+
+**DTO Boundaries:**
+- `Handlers_Should_Not_Return_Domain_Types` - Handlers must return DTOs, never domain entities
+- **Why:** Prevents domain model exposure to API clients
+
+**Bounded Context Isolation:**
+- `Application_Features_Should_Be_BoundedContexts` - Features cannot depend on other features
+- Dynamically discovers all aggregates and validates feature isolation
+- **Why:** Maintains bounded context boundaries within the application layer
+
+### Service Boundaries
+
+**Microservices Isolation:**
+- Services cannot depend on other services' internals
+- Shared contracts ensure type safety without coupling
+- Architecture tests enforce service autonomy
+
+### Benefits
+
+**For New Developers:**
+- No need to memorize architectural rules
+- Violations caught immediately during development and PRs
+
+**For Teams:**
+- Prevents architectural degradation over time
+- Self-documenting architecture constraints
+- Confident refactoring with safety net
+- Ensures service boundaries remain respected
+
+**For Code Reviews:**
+- Automated enforcement reduces review burden
+- Consistent patterns across all services
 
 ## Evolution from Monolith to Microservices
 
-This repository demonstrates the migration journey from the original template. The original template was designed with microservices support, which made the migration straightforward. Here's what enabled this:
+This repository evolved from the original [CleanArchitecture-DDD-CQRS](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS) template. The original template was designed with microservices in mind from the start, which made the evolution straightforward. Here's what enabled this:
 
 ### What Made the Original Template Microservices-Ready
 
@@ -278,28 +403,39 @@ Each service requires:
 ### Unit Tests
 
 Each service has unit tests for:
-- Domain logic
-- Application handlers
+- Domain logic and business rules
+- Application command/query handlers
 - Architecture boundaries
+
+Run all unit tests:
+```bash
+dotnet test --filter "FullyQualifiedName~UnitTests"
+```
 
 ### Integration Tests
 
 Integration tests use Testcontainers for:
-- Real database testing
-- End-to-end scenarios
-- Event flow validation
+- Real database testing (one per service)
+- End-to-end scenarios across services
+- Event flow validation through message bus
+- Saga orchestration testing
+
+Run all integration tests:
+```bash
+dotnet test --filter "FullyQualifiedName~IntegrationTests"
+```
 
 ### Architecture Tests
 
-Automated tests enforce:
-- Service boundaries
-- Layer dependencies
-- CQRS separation
-- Bounded context isolation
+Automated tests enforce architectural boundaries at compile-time. These tests run as part of the unit test suite and prevent:
+- Service boundary violations
+- Layer dependency violations
+- CQRS separation violations
+- Bounded context coupling
 
 ## What's Not Included
 
-This repository focuses on architecture and design. concerns that are out of scope:
+This repository focuses on architecture and design. Cross-cutting concerns that are out of scope:
 - Authentication/Authorization
 - Distributed tracing
 - Monitoring and alerting

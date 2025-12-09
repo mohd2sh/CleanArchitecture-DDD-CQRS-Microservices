@@ -5,23 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <title>Microservices Clean Architecture CQRS DDD - .NET 8 Evolution Example</title>
-    <meta name="description" content="Complete .NET 8 microservices architecture demonstrating evolution from monolithic DDD/CQRS template to distributed system. Learn Clean Architecture, CQRS, DDD, Saga patterns, Outbox pattern, and event-driven architecture with real CMMS implementation.">
-    <meta name="keywords" content=".NET microservices, Clean Architecture .NET, CQRS DDD .NET, Microservices patterns, Event-driven architecture .NET, Saga pattern .NET, Outbox pattern .NET, Domain-Driven Design .NET, Monolith to microservices migration, Evolutionary architecture .NET, Microservices evolution">
+    <title>Microservices Clean Architecture CQRS DDD - .NET 8 Complete Implementation</title>
+    <meta name="description" content="Complete .NET 8 microservices architecture with Clean Architecture, DDD, and CQRS. Automated architecture tests, integration tests, and event-driven coordination. Ready-to-use microservices implementation with real CMMS domain.">
+    <meta name="keywords" content=".NET microservices, Clean Architecture .NET, CQRS DDD .NET, Microservices patterns, Event-driven architecture .NET, Saga pattern .NET, Outbox pattern .NET, Domain-Driven Design .NET, Architecture tests .NET, Automated boundary enforcement .NET, Microservices implementation">
     <meta name="author" content="Mohammad Shakhtour">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/">
     
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Microservices Clean Architecture CQRS DDD - .NET 8 Evolution Example">
-    <meta property="og:description" content="Complete .NET 8 microservices architecture demonstrating evolution from monolithic DDD/CQRS template to distributed system.">
+    <meta property="og:title" content="Microservices Clean Architecture CQRS DDD - .NET 8 Complete Implementation">
+    <meta property="og:description" content="Complete .NET 8 microservices architecture with Clean Architecture, DDD, and CQRS. Automated architecture tests and event-driven coordination.">
     <meta property="og:url" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/">
     <meta property="og:image" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/assets/images/HighLevelArch.png">
     <meta property="og:site_name" content="Microservices Clean Architecture CQRS DDD">
     
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Microservices Clean Architecture CQRS DDD - .NET 8 Evolution">
-    <meta name="twitter:description" content="Complete .NET 8 microservices architecture demonstrating evolution from monolithic DDD/CQRS template to distributed system.">
+    <meta name="twitter:title" content="Microservices Clean Architecture CQRS DDD - .NET 8 Complete Implementation">
+    <meta name="twitter:description" content="Complete .NET 8 microservices architecture with Clean Architecture, DDD, and CQRS. Automated architecture tests and event-driven coordination.">
     <meta name="twitter:image" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/assets/images/HighLevelArch.png">
     
     <link rel="stylesheet" href="assets/css/style.css">
@@ -55,7 +55,7 @@
         "@type": "CodeRepository",
         "name": "CleanArchitecture-DDD-CQRS-Microservices",
         "url": "https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/",
-        "description": "Complete .NET 8 microservices architecture demonstrating evolution from monolithic DDD/CQRS template to distributed system.",
+        "description": "Complete .NET 8 microservices architecture with Clean Architecture, DDD, and CQRS. Automated architecture tests and event-driven coordination.",
         "programmingLanguage": "C#",
         "license": "MIT"
     }
@@ -67,9 +67,10 @@
             <div class="container">
                 <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/" class="logo">Microservices Architecture</a>
                 <div class="nav-links">
-                    <a href="#evolution">Evolution</a>
-                    <a href="#architecture">Architecture</a>
                     <a href="#features">Features</a>
+                    <a href="#architecture">Architecture</a>
+                    <a href="#architecture-tests">Architecture Tests</a>
+                    <a href="#evolution">Evolution</a>
                     <a href="#quickstart">Quick Start</a>
                     <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/" class="btn-primary">View on GitHub</a>
                 </div>
@@ -80,8 +81,8 @@
     <main>
         <section class="hero">
             <div class="container">
-                <h1>Evolution from Monolith to Microservices</h1>
-                <p class="hero-subtitle">Complete .NET 8 microservices architecture demonstrating the evolutionary journey from monolithic DDD/CQRS template to distributed system</p>
+                <h1>Complete Microservices Architecture</h1>
+                <p class="hero-subtitle">A .NET 8 microservices implementation demonstrating Clean Architecture, DDD, and CQRS with automated architecture tests, integration tests, and event-driven distributed coordination</p>
                 <div class="hero-actions">
                     <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/" class="btn btn-large">View on GitHub</a>
                     <a href="#quickstart" class="btn btn-large btn-secondary">Get Started</a>
@@ -92,14 +93,71 @@
                     <span class="badge">CQRS</span>
                     <span class="badge">DDD</span>
                     <span class="badge">Microservices</span>
+                    <span class="badge">Architecture Tests</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture-tests" class="architecture-tests">
+            <div class="container">
+                <h2>Architecture Tests</h2>
+                <p class="section-intro">The repository includes many architecture tests that automatically enforce DDD principles and Clean Architecture boundaries across all services. New team members can work confidently—architectural violations are caught at compile-time through automated tests.</p>
+                
+                <div class="tests-grid">
+                    <div class="test-category">
+                        <h3>Domain Layer Protection</h3>
+                        <ul>
+                            <li>ValueObjects_Should_Be_Immutable - No public setters allowed</li>
+                            <li>ValueObjects_Should_Be_Sealed - Prevents inheritance and maintains invariants</li>
+                            <li>Aggregates_Should_Have_Internal_Or_Private_Constructors - Enforces factory methods</li>
+                            <li>DomainEvents_Should_Be_Sealed_And_EndWith_Event - Naming conventions enforced</li>
+                            <li>Domain_Should_Not_Depend_On_Other_Layers - Dependency rule enforcement</li>
+                        </ul>
+                    </div>
+                    <div class="test-category">
+                        <h3>Application Layer Boundaries</h3>
+                        <ul>
+                            <li>Application_Should_Not_Depend_On_Infrastructure_Or_Api - Clean Architecture enforcement</li>
+                            <li>Commands_And_Queries_Should_Be_Immutable - CQRS contracts are immutable</li>
+                            <li>QueryHandlers_Should_Not_Use_IRepository - Enforces CQRS separation</li>
+                            <li>CommandHandlers_Should_Not_Use_IReadRepository - Prevents accidental coupling</li>
+                            <li>Handlers_Should_Not_Return_Domain_Types - Prevents domain model exposure</li>
+                        </ul>
+                    </div>
+                    <div class="test-category">
+                        <h3>Service Boundaries</h3>
+                        <ul>
+                            <li>Services cannot depend on other services' internals</li>
+                            <li>Shared contracts ensure type safety without coupling</li>
+                            <li>Architecture tests enforce service autonomy</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="benefits-section">
+                    <h3>Benefits</h3>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <h4>For New Developers</h4>
+                            <p>No need to memorize architectural rules. Violations caught immediately during development and PRs with clear error messages.</p>
+                        </div>
+                        <div class="benefit-item">
+                            <h4>For Teams</h4>
+                            <p>Prevents architectural degradation over time. Self-documenting architecture constraints enable confident refactoring.</p>
+                        </div>
+                        <div class="benefit-item">
+                            <h4>For Code Reviews</h4>
+                            <p>Automated enforcement reduces review burden. Focus on business logic, not architecture violations.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section id="evolution" class="evolution">
             <div class="container">
-                <h2>The Evolutionary Journey</h2>
-                <p class="section-intro">This repository demonstrates the migration journey from the original template. The original template was designed with microservices in mind, which made the migration straightforward.</p>
+                <h2>Evolution from Monolith to Microservices</h2>
+                <p class="section-intro">This repository evolved from the original <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS">CleanArchitecture-DDD-CQRS</a> template. The original template was designed with microservices in mind from the start, which made the evolution straightforward.</p>
                 
                 <div class="evolution-grid">
                     <div class="evolution-item">
@@ -141,41 +199,109 @@
             </div>
         </section>
 
+        <section class="philosophy">
+            <div class="container">
+                <h2>Philosophy</h2>
+                <p class="section-intro">This repository demonstrates that implementing microservices with Clean Architecture, DDD, and CQRS doesn't have to be complex. It shows how to apply these patterns pragmatically in .NET—with enough structure to maintain boundaries and enable testing, but without over-engineering.</p>
+                
+                <div class="philosophy-content">
+                    <div class="philosophy-item">
+                        <h3>Perfect For</h3>
+                        <ul>
+                            <li>Teams building enterprise .NET microservices with CQRS and DDD</li>
+                            <li>Developers learning how to implement microservices patterns</li>
+                            <li>Architects evaluating microservices implementations</li>
+                            <li>Technical leads enforcing architectural boundaries through automated tests</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="philosophy-item">
+                        <h3>Design Principles</h3>
+                        <ul>
+                            <li><strong>Domain-First Design</strong> - Business logic lives in the domain, not in services</li>
+                            <li><strong>Explicit Boundaries</strong> - Each layer and service has a clear purpose and dependency rules</li>
+                            <li><strong>Testability by Design</strong> - Every component can be tested in isolation</li>
+                            <li><strong>Pragmatic CQRS</strong> - Separate read/write models where it adds value</li>
+                            <li><strong>Architectural Governance</strong> - Automated tests prevent boundary violations</li>
+                            <li><strong>Service Autonomy</strong> - Each service owns its data and can evolve independently</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="features" class="features">
             <div class="container">
-                <h2>Key Features</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <h3>Clean Architecture</h3>
-                        <p>Domain, Application, Infrastructure, and API layers with clear separation of concerns</p>
+                <h2>Key Features Overview</h2>
+                <p class="section-intro">This repository includes implementations of enterprise patterns working together in a microservices architecture:</p>
+                
+                <div class="features-section">
+                    <h3>Core Architecture</h3>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <h4>Clean Architecture</h4>
+                            <p>Domain, Application, Infrastructure, and API layers with dependency inversion</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>DDD Tactical Patterns</h4>
+                            <p>Aggregates, Entities, Value Objects, and Domain Events</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>CQRS</h4>
+                            <p>EF Core for writes, Dapper for reads, flexible read sources</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Custom Mediator</h4>
+                            <p>No MediatR dependency, full control over CQRS pipeline</p>
+                        </div>
                     </div>
-                    <div class="feature-card">
-                        <h3>CQRS Pattern</h3>
-                        <p>Command Query Responsibility Segregation with separate read and write models</p>
+                </div>
+
+                <div class="features-section">
+                    <h3>Microservices Patterns</h3>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <h4>Database-Per-Service</h4>
+                            <p>Each service owns its database ensuring autonomy</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Event-Driven Communication</h4>
+                            <p>Services communicate via events through RabbitMQ</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Outbox Pattern</h4>
+                            <p>Guaranteed event delivery with at-least-once semantics</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Saga Orchestration</h4>
+                            <p>Distributed workflows coordinated by orchestration service</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Shared Contracts</h4>
+                            <p>Immutable event schemas for type safety across services</p>
+                        </div>
                     </div>
-                    <div class="feature-card">
-                        <h3>Domain-Driven Design</h3>
-                        <p>Rich domain models with aggregates, entities, value objects, and domain events</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Event-Driven Architecture</h3>
-                        <p>Asynchronous communication via events through RabbitMQ message bus</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Saga Orchestration</h3>
-                        <p>Distributed workflows coordinated by orchestration service with compensation</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Outbox Pattern</h3>
-                        <p>Guaranteed event delivery with transactional outbox and MassTransit bridge</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Database-Per-Service</h3>
-                        <p>Each service owns its data ensuring autonomy and independent scaling</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Docker Compose Ready</h3>
-                        <p>Complete Docker Compose setup for local development and testing</p>
+                </div>
+
+                <div class="features-section">
+                    <h3>Quality & Documentation</h3>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <h4>Architecture Tests</h4>
+                            <p>Automated tests enforcing DDD/Clean Architecture boundaries</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Integration Tests</h4>
+                            <p>Testcontainers-based end-to-end scenarios</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>ADRs</h4>
+                            <p>Documented architectural decisions with trade-offs</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Unit Tests</h4>
+                            <p>Domain & Application layer tests across all services</p>
+                        </div>
                     </div>
                 </div>
             </div>
