@@ -2,7 +2,7 @@
 
 A .NET 8 microservices architecture demonstrating the evolution from a monolithic DDD/CQRS template to a fully distributed system. This repository showcases how the original template's design decisions enabled a smooth migration to microservices.
 
-**Original Template:** [CleanArchitecture-DDD-CQRS](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices)
+**Original Template:** [CleanArchitecture-DDD-CQRS](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS)
 
 ## Introduction
 
@@ -19,30 +19,6 @@ A CMMS system manages maintenance operations:
 - **Assignments** - Connections between technicians and work orders
 
 The system handles the complete maintenance lifecycle: creating work orders, assigning technicians, tracking progress, and completing work across distributed services.
-
-## Evolution from Monolith to Microservices
-
-This repository demonstrates the migration journey from the original template. The original template was designed with microservices in mind, which made the migration straightforward. Here's what enabled this:
-
-### What Made the Original Template Microservices-Ready
-
-**1. Outbox Pattern Abstraction**
-The original template implemented `IOutboxStore` and `IOutboxPublisher` abstractions. This made swapping from in-process handlers to message bus integration trivial. The same code that worked in-process now publishes to RabbitMQ via MassTransit.
-
-**2. Event-Driven Architecture**
-The dual handler system (`IDomainEventHandler` for transactional events, `IIntegrationEventHandler` for async events) translated directly to microservices. Integration events that were handled in-process now flow through the message bus to other services.
-
-**3. Bounded Context Isolation**
-Architecture tests enforced strict boundaries between bounded contexts. When we split into services, these boundaries were already respected, preventing cross-service coupling.
-
-**4. Database-Per-Service Structure**
-The original template used separate database schema for each domain, and with no direct referince between domin/schema
-
-**5. Clean Separation of Concerns**
-Domain, Application, and Infrastructure layers were clearly separated. Each service maintains this structure independently.
-
-**6. Architecture Tests**
-Automated tests enforced boundaries at compile-time. These same tests now ensure services don't accidentally depend on each other's internals.
 
 ## Architecture Diagrams
 
@@ -71,6 +47,36 @@ Services communicate asynchronously via events through the message bus. The Orch
 This diagram illustrates the complete flow for assigning a technician to a work order.
 
 The flow demonstrates the outbox pattern for guaranteed delivery, saga orchestration for distributed transactions, and eventual consistency across services.
+
+
+## Evolution from Monolith to Microservices
+
+This repository demonstrates the migration journey from the original template. The original template was designed with microservices support, which made the migration straightforward. Here's what enabled this:
+
+### What Made the Original Template Microservices-Ready
+
+**1. Outbox Pattern Abstraction**
+The original template implemented `IOutboxStore` and `IOutboxPublisher` abstractions. This made swapping from in-process handlers to message bus integration trivial. The same code that worked in-process now publishes to RabbitMQ via MassTransit.
+
+**2. Event-Driven Architecture**
+The dual handler system (`IDomainEventHandler` for transactional events, `IIntegrationEventHandler` for async events) translated directly to microservices. Integration events that were handled in-process now flow through the message bus to other services.
+
+**3. Bounded Context Isolation**
+Architecture tests enforced strict boundaries between bounded contexts. When we split into services, these boundaries were already respected, preventing cross-service coupling.
+
+**4. Database-Per-Service Structure**
+The original template used separate database schema for each domain, and with no direct reference between domains/schemas
+
+**5. Clean Separation of Concerns**
+Domain, Application, and Infrastructure layers were clearly separated. Each service maintains this structure independently.
+
+**6. Architecture Tests**
+Automated tests enforced boundaries at compile-time. These same tests now ensure services don't accidentally depend on each other's internals.
+
+## Original Template
+
+The original [CleanArchitecture-DDD-CQRS](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS) template provides the foundation for how DDD and CQRS are built. We used the core NuGet packages from there for the abstractions and bootstrapping template code. For detailed documentation on DDD patterns, CQRS implementation, architecture tests, and other template features, see the [original template repository](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS).
+
 
 ## Inter-Service Communication
 
@@ -235,8 +241,8 @@ The original template's ADRs (ADR-001 through ADR-006) documented foundational p
 The easiest way to run all services:
 
 ```bash
-git clone <repository-url>
-cd Company.Cmms
+git clone https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices.git
+cd CleanArchitecture-DDD-CQRS-Microservices
 docker-compose up
 ```
 
@@ -298,6 +304,7 @@ This repository focuses on architecture and design. concerns that are out of sco
 - Distributed tracing
 - Monitoring and alerting
 - Production infrastructure
+- Secrets management
 
 ## TODO
 
@@ -306,7 +313,7 @@ Future improvements and enhancements:
 - Complete Kong API gateway configuration and routing
 - Cross-Service Query Patterns
 - Add Orchestration unit tests and integration tests
-- Complete docker compose setup for all services
+- Enhance health checks with database, RabbitMQ and Health-UI
 
 ## Contributing
 
