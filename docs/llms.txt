@@ -1,0 +1,45 @@
+# CleanArchitecture-DDD-CQRS-Microservices
+
+> Complete .NET 8 microservices reference with Clean Architecture, DDD, CQRS, saga orchestration, outbox pattern, and automated architecture tests.
+
+## Summary
+
+Open-source CMMS (Computerized Maintenance Management System) implemented as four microservices: WorkOrders, Assets, Technicians, and Orchestration. Each service follows Clean Architecture with database-per-service, event-driven communication via RabbitMQ, and MassTransit saga orchestration.
+
+## Key URLs
+
+- Home: https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/
+- GitHub: https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices
+- Patterns: https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/patterns.html
+- ADRs: https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/adrs/
+
+## Patterns Demonstrated
+
+- Clean Architecture (Domain, Application, Infrastructure, API)
+- Domain-Driven Design (Aggregates, Value Objects, Domain Events)
+- CQRS (EF Core writes, Dapper reads)
+- Outbox Pattern with MassTransit bridge
+- Saga Orchestration (AssignTechnician, CompleteWorkOrder)
+- Database-Per-Service
+- Automated Architecture Tests
+- Shared Event Contracts
+
+## Architectural Decision Records
+
+- ADR-007: Message Bus and Saga Framework Selection (MassTransit) — /adrs/adr-007.html
+- ADR-008: Cross-Service Query Patterns (CDC, Materialized Views) — /adrs/adr-008.html
+
+## Related Repositories
+
+- Monolith template: https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS
+- CDC demo: https://github.com/mohd2sh/cqrs-beyond-database
+
+## Quick Start
+
+git clone https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices.git
+cd CleanArchitecture-DDD-CQRS-Microservices
+docker-compose up
+
+## License
+
+MIT

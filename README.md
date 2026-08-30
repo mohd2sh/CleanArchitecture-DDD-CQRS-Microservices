@@ -5,6 +5,8 @@
 ![Unit & Architecture Tests](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/actions/workflows/dotnet-test.yml/badge.svg)
 ![Docker Build](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/actions/workflows/docker-build.yml/badge.svg)
 
+**Documentation:** [mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices](https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/)
+
 A .NET 8 microservices architecture demonstrating Clean Architecture, Domain-Driven Design (DDD), and CQRS with automated architecture tests, integration tests, and event-driven distributed coordination. This repository provides a complete, functioning microservices implementation that teams can learn from and adapt.
 
 **Original Template:** [CleanArchitecture-DDD-CQRS](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS)
@@ -89,7 +91,7 @@ This repository includes implementations of enterprise patterns working together
 
 ### High-Level System Architecture
 
-![Microservices Architecture](docs/diagrams/HighLevelArch.png)
+![Microservices Architecture](docs/assets/images/HighLevelArch.png)
 
 The system architecture demonstrates a microservices implementation with four main services:
 
@@ -107,7 +109,7 @@ Services communicate asynchronously via events through the message bus. The Orch
 
 ### Assign Technician Flow
 
-![Assign Technician Flow](docs/diagrams/AssignTechnicianFlow.png)
+![Assign Technician Flow](docs/assets/images/AssignTechnicianFlow.png)
 
 This diagram illustrates the complete flow for assigning a technician to a work order.
 

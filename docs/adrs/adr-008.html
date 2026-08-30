@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADR-008: Cross-Service Query Patterns</title>
+    <meta name="description" content="CDC, materialized views, data API, and event-based read models for cross-service queries in microservices.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/adrs/adr-008.html">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="ADR-008: Cross-Service Query Patterns">
+    <meta property="og:description" content="CDC, materialized views, data API, and event-based read models for cross-service queries in microservices.">
+    <meta property="og:url" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/adrs/adr-008.html">
+    <meta property="og:image" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/assets/images/social-preview.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ADR-008: Cross-Service Query Patterns">
+    <meta name="twitter:description" content="CDC, materialized views, data API, and event-based read models for cross-service queries in microservices.">
+    <meta name="twitter:image" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/assets/images/social-preview.png">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "ADR-008: Cross-Service Query Patterns",
+        "description": "CDC, materialized views, data API, and event-based read models for cross-service queries in microservices.",
+        "author": {"@type": "Person", "name": "Mohammad Shakhtour"},
+        "url": "https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/adrs/adr-008.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../index.html" class="logo"><span class="logo-dotnet">.NET</span> Microservices CQRS</a>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">&#9776;</button>
+            <ul class="nav-links">
+                <li><a href="../index.html#features">Features</a></li>
+                <li><a href="../index.html#architecture">Architecture</a></li>
+                <li><a href="../patterns.html">Patterns</a></li>
+                <li><a href="index.html">ADRs</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices" class="btn btn-primary btn-sm" target="_blank" rel="noopener">Star on GitHub</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container-narrow">
+        <div class="page-header">
+            <h1>ADR-008: Cross-Service Query Patterns</h1>
+            <div class="page-meta">
+                <span>Author: Mohammad Shakhtour</span>
+                <span class="status-badge status-open">Open/In-Progress</span>
+            </div>
+        </div>
+        <article class="article-content">
+<p><strong>Author:</strong> Mohammad Shakhtour  </p>
+<p><strong>Status:</strong> Open/In-Progress</p>
+<h2>Summary</h2>
+<p>Decision pending on how to handle cross-service queries in microservices architecture. Current implementation returns empty strings for related data from other services. Multiple options are being evaluated.</p>
+<h2>Context</h2>
+<p>In a microservices architecture, each service owns its own database. This creates a challenge when we need to display data that spans multiple services.</p>
+<p><strong>The Problem:</strong></p>
+<p>In <code>WorkOrderReadRepository.GetActiveWithTechnicianAndAssetAsync</code>, we need to display work orders with technician names and asset names. In the original repo, this would be a SQL join across schema. However, in this microservices repo:</p>
+<ul>
+<li>Work orders are stored in the <code>WorkOrders</code> service database</li>
+<li>Technician data is stored in the <code>Technicians</code> service database  </li>
+<li>Asset data is stored in the <code>Assets</code> service database</li>
+</ul>
+<p><strong>Current State:</strong></p>
+<p>The current implementation returns empty strings for <code>TechnicianName</code> and <code>AssetName</code>:</p>
+<pre><code class="language-csharp">SELECT 
+    w.Id,
+    w.Title,
+    &#x27;&#x27; AS TechnicianName,  
+    &#x27;&#x27; AS AssetName,
+    w.Status
+FROM workorders.WorkOrders w
+WHERE w.Status &lt;&gt; @Completed</code></pre>
+<p>We need to decide on an approach to populate this cross-service data while maintaining service autonomy and architectural boundaries.</p>
+<h2>Decision Drivers</h2>
+<ul>
+<li><strong>Service Autonomy</strong> - Each service should own its data and not depend on other services&#x27; databases</li>
+<li><strong>Complexity</strong> - Implementation and maintenance complexity</li>
+<li><strong>Latency</strong> - Query performance and response times</li>
+<li><strong>Scalability</strong> - Ability to scale independently</li>
+<li><strong>Implementation Effort</strong> - Time and resources required to implement</li>
+<li><strong>Operational Overhead</strong> - Infrastructure and maintenance requirements</li>
+</ul>
+<h2>Considered Options</h2>
+<h3>Option 1: Cross-Database Joins (Avoid! Bad Practice)</h3>
+<p><strong>Description:</strong>  </p>
+<p>Direct SQL joins across databases on the same SQL Server instance using three-part naming (<code>Database.Schema.Table</code>).</p>
+<p><strong>Implementation:</strong></p>
+<pre><code class="language-sql">SELECT 
+    w.Id,
+    w.Title,
+    t.Name AS TechnicianName,
+    a.Name AS AssetName,
+    w.Status
+FROM workorders.WorkOrders w
+LEFT JOIN technicians.Technicians t ON w.TechnicianId = t.Id
+LEFT JOIN assets.Assets a ON w.AssetId = a.Id
+WHERE w.Status &lt;&gt; @Completed</code></pre>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>Simple to implement - just SQL joins</li>
+<li>Better consistency - read replica sync faster than CDC streaming</li>
+<li>No additional infrastructure required</li>
+<li>Low latency - single query</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><strong>Bad practice</strong> - Violates service autonomy and database-per-service principle</li>
+<li>Deployment coupling - All databases must be on same server</li>
+<li>Schema changes break queries - Changes in one service affect others</li>
+<li>Violates microservices principles - Creates distributed monolith risk</li>
+<li>Not scalable - Cannot scale databases independently</li>
+</ul>
+<p><strong>Why Not:</strong></p>
+<p>Cross-database joins fundamentally violate the microservices principle of service autonomy. While they might work as a temporary solution, they create tight coupling that defeats the purpose of microservices architecture.</p>
+<p><strong>Note:</strong> This would only be considered as a temporary workaround, not a long-term solution.</p>
+<h3>Option 2: CDC (Change Data Capture) with Materialized Views</h3>
+<p><strong>Description:</strong>  </p>
+<p>Use Change Data Capture (CDC) to stream database changes to a read-optimized store that acts as materialized views (e.g., Elasticsearch, dedicated read database). Services query the denormalized read model instead of their own databases.</p>
+<p><strong>Key Concepts:</strong></p>
+<ul>
+<li><strong>CDC (Change Data Capture)</strong>: The mechanism for capturing database changes in real-time from transaction logs</li>
+<li><strong>Materialized Views</strong>: Pre-computed, stored query results that provide efficient access to aggregated/joined data</li>
+<li><strong>Relationship</strong>: CDC is the streaming mechanism that populates materialized views (the storage pattern)</li>
+</ul>
+<p><strong>Implementation:</strong></p>
+<ul>
+<li>Debezium captures changes from SQL Server databases (CDC mechanism)</li>
+<li>Streams changes to Kafka</li>
+<li>Elasticsearch consumers build denormalized read models (materialized views)</li>
+<li>Services query Elasticsearch for cross-service data</li>
+</ul>
+<p><strong>Industry Practice:</strong>  </p>
+<p>This pattern is widely used in production systems. Netflix uses DBLog (their CDC framework) combined with materialized views for cross-service queries in their microservices architecture. The combination of CDC + Materialized Views is a common CQRS pattern recommended by AWS and other cloud providers.</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><strong>Service autonomy maintained</strong> - No direct database dependencies</li>
+<li><strong>Optimized read models</strong> - Denormalized data optimized for queries (materialized views)</li>
+<li><strong>Scalability</strong> - Can scale read models independently</li>
+<li><strong>Eventual consistency</strong> - Acceptable for read scenarios</li>
+<li><strong>Separation of concerns</strong> - Write databases for transactions, read models (materialized views) for queries</li>
+<li><strong>Real-time updates</strong> - CDC provides near real-time synchronization</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><strong>Infrastructure complexity</strong> - Requires Debezium, Kafka, Elasticsearch</li>
+<li><strong>Operational overhead</strong> - Additional services to maintain and monitor</li>
+<li><strong>Eventual consistency</strong> - Data may be slightly stale</li>
+<li><strong>Initial snapshot complexity</strong> - Need to handle full data dumps for initial population</li>
+</ul>
+<p><strong>Demo Repository:</strong>  </p>
+<p>A working demo of CDC with Debezium streaming from SQL Server to Elasticsearch is available at: https://github.com/mohd2sh/cqrs-beyond-database</p>
+<h3>Option 2.5: Database-Native Materialized Views</h3>
+<p><strong>Description:</strong>  </p>
+<p>Use database-native materialized views (e.g., PostgreSQL, SQL Server) that are populated via CDC, scheduled refreshes, or database replication. Services query materialized views in a shared read database or read replicas.</p>
+<p><strong>Implementation Approaches:</strong></p>
+<ul>
+<li><strong>CDC Populated</strong>: Use CDC (Debezium) to stream changes to a read database, then create materialized views on that database</li>
+<li><strong>Scheduled Refresh</strong>: Materialized views refreshed on a schedule (e.g., hourly, daily)</li>
+<li><strong>Incremental Refresh</strong>: Database supports incremental view maintenance (e.g., PostgreSQL, Materialize)</li>
+<li><strong>Replication-Based</strong>: Use database replication to sync data, then create materialized views on replicas</li>
+</ul>
+<p><strong>Example (PostgreSQL):</strong></p>
+<pre><code class="language-sql">CREATE MATERIALIZED VIEW work_orders_with_details AS
+SELECT 
+    w.Id,
+    w.Title,
+    t.Name AS TechnicianName,
+    a.Name AS AssetName,
+    w.Status
+FROM workorders.WorkOrders w
+LEFT JOIN technicians.Technicians t ON w.TechnicianId = t.Id
+LEFT JOIN assets.Assets a ON w.AssetId = a.Id
+WHERE w.Status &lt;&gt; &#x27;Completed&#x27;;
+
+-- Refresh on schedule or on-demand
+REFRESH MATERIALIZED VIEW work_orders_with_details;</code></pre>
+<p><strong>Industry Practice:</strong>  </p>
+<p>AWS recommends using materialized views with CQRS for microservices decomposition. Some databases like Materialize provide incremental view maintenance that automatically keeps materialized views up-to-date as source data changes.</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><strong>Database-native</strong> - No additional infrastructure beyond database</li>
+<li><strong>Familiar SQL interface</strong> - Standard SQL queries, no learning curve</li>
+<li><strong>Incremental refresh</strong> - Some databases support automatic incremental updates</li>
+<li><strong>Lower infrastructure cost</strong> - No need for separate search/indexing infrastructure</li>
+<li><strong>ACID properties</strong> - When using same database, benefits from transaction guarantees</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><strong>Database vendor lock-in</strong> - Tied to specific database features</li>
+<li><strong>Coupling risk</strong> - May require shared read database or same database instance</li>
+<li><strong>Refresh overhead</strong> - Full refreshes can be expensive for large datasets</li>
+<li><strong>Less flexible</strong> - Not as flexible as dedicated read stores (Elasticsearch, etc.)</li>
+<li><strong>Scalability limits</strong> - Limited by database scaling capabilities</li>
+</ul>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>When services can share a read database or read replicas</li>
+<li>When using database replication for data synchronization</li>
+<li>When you want to minimize infrastructure complexity</li>
+<li>When incremental view maintenance is available (e.g., PostgreSQL, Materialize)</li>
+</ul>
+<h3>Option 3: Data API</h3>
+<p><strong>Description:</strong>  </p>
+<p>Create a dedicated API service that aggregates and manage data from multiple services. The API makes calls to each service and composes the results.</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><strong>Service boundaries maintained</strong> - Each service owns its data</li>
+<li><strong>Single endpoint</strong> - Clients get all data from one API call</li>
+<li><strong>Flexibility</strong> - Can add caching, transformation, or business logic</li>
+<li><strong>Service autonomy</strong> - No database coupling</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><strong>Network overhead</strong> - Multiple HTTP calls</li>
+<li><strong>Latency</strong> - Sequential calls increase response time</li>
+<li><strong>Additional service</strong> - Another service to develop and maintain</li>
+<li><strong>Error handling complexity</strong> - Partial failures need handling</li>
+<li><strong>Caching complexity</strong> - Need to cache and invalidate properly</li>
+</ul>
+<h3>Option 4: Read Models / Denormalized Data (Event-Populated Materialized Views)</h3>
+<p><strong>Description:</strong>  </p>
+<p>Each service maintains read models (essentially materialized views) of related data from other services, updated via domain events. This is an alternative to CDC-based materialized views, where events are the synchronization mechanism instead of database transaction logs.</p>
+<p><strong>Key Concept:</strong>  </p>
+<p>Read Models are materialized views populated via domain events rather than CDC. Both approaches create denormalized, pre-computed query results, but differ in the synchronization mechanism:</p>
+<ul>
+<li><strong>CDC-based Materialized Views</strong> (Option 2): Populated from database transaction logs</li>
+<li><strong>Event-based Materialized Views</strong> (Option 4): Populated from domain events published by services</li>
+</ul>
+<p><strong>Implementation:</strong></p>
+<ul>
+<li>Services publish domain events when data changes (e.g., <code>TechnicianUpdatedEvent</code>, <code>AssetCreatedEvent</code>)</li>
+<li>Consuming services subscribe to relevant events</li>
+<li>Event handlers update local read model tables (materialized views)</li>
+<li>Queries join against local read models</li>
+</ul>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><strong>Service autonomy</strong> - No direct database access</li>
+<li><strong>Fast queries</strong> - Local joins, no network calls</li>
+<li><strong>Event-driven</strong> - Aligns with event-driven architecture</li>
+<li><strong>Scalability</strong> - Each service scales independently</li>
+<li><strong>Domain-aligned</strong> - Events represent business domain changes, not just database changes</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><strong>Storage overhead</strong> - Duplicated data across services</li>
+<li><strong>Custom Code</strong> - Need to manage the event handling</li>
+<li><strong>Event handling</strong> - Need to handle all event types</li>
+<li><strong>Data synchronization</strong> - Complex to keep in sync</li>
+<li><strong>Storage growth</strong> - Read models grow over time</li>
+<li><strong>Event ordering</strong> - Need to handle out-of-order events</li>
+<li><strong>Missing events</strong> - Need to handle missed events and replay scenarios</li>
+</ul>
+<h2>Industry Practices and References</h2>
+<h3>Netflix</h3>
+<p>Netflix uses <strong>DBLog</strong>, a generic Change Data Capture (CDC) framework, combined with materialized views for cross-service queries in their microservices architecture. DBLog captures committed database changes in real-time and propagates them to downstream consumers, enabling loosely coupled microservices while maintaining data synchronization.</p>
+<p><strong>Key Points:</strong></p>
+<ul>
+<li>CDC framework (DBLog) captures changes from transaction logs</li>
+<li>Materialized views store denormalized read models</li>
+<li>Enables querying across microservices without direct database dependencies</li>
+<li>Handles both real-time changes and on-demand full dumps</li>
+</ul>
+<p><strong>Reference:</strong> <a href="https://netflixtechblog.com/dblog-a-generic-change-data-capture-framework-69351fb9099b">DBLog: A Generic Change-Data-Capture Framework - Netflix TechBlog</a></p>
+<h3>AWS</h3>
+<p>AWS recommends using <strong>CQRS (Command Query Responsibility Segregation)</strong> with materialized views for decomposing monoliths into microservices. The pattern separates read and write operations, using materialized views as read-only replicas optimized for specific query requirements.</p>
+<p><strong>Key Points:</strong></p>
+<ul>
+<li>CQRS pattern with materialized views for microservices</li>
+<li>Read models receive queries against materialized views</li>
+<li>Events trigger updates to read database, keeping materialized views eventually consistent</li>
+<li>Can use DynamoDB Streams + Lambda to populate read models in Aurora</li>
+</ul>
+<p><strong>Reference:</strong> <a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/decompose-monoliths-into-microservices-by-using-cqrs-and-event-sourcing.html">Decompose monoliths into microservices by using CQRS and event sourcing - AWS</a></p>
+<h3>Common Pattern: CDC + Materialized Views</h3>
+<p>The combination of CDC and Materialized Views is a widely adopted pattern in production microservices architectures:</p>
+<ul>
+<li><strong>CDC</strong> provides the mechanism for capturing and streaming database changes</li>
+<li><strong>Materialized Views</strong> provide the storage pattern for optimized read models</li>
+<li>Together, they enable real-time data synchronization while maintaining service autonomy</li>
+</ul>
+<p>This pattern is particularly effective for:</p>
+<ul>
+<li>Cross-service queries that require data from multiple bounded contexts</li>
+<li>High-performance read scenarios that benefit from denormalized data</li>
+<li>Systems requiring eventual consistency with near real-time updates</li>
+</ul>
+<p><strong>References:</strong></p>
+<ul>
+<li><a href="https://medium.com/event-driven-utopia/querying-microservices-with-the-cqrs-and-materialized-view-pattern-bdb8b17f95d1">Querying Microservices with the CQRS and Materialized View Pattern</a></li>
+<li><a href="https://materialize.com/guides/cdc-in-production">CDC in Production: An Operating Guide</a></li>
+</ul>
+<h2>Decision Outcome</h2>
+<p><strong>Status: Open/In-Progress</strong></p>
+<p>Still on the TODO. The current implementation returns empty strings for cross-service data fields.</p>
+<p><strong>Considerations:</strong></p>
+<ul>
+<li>Cross-database joins are <strong>bad practice</strong> and would only be a temporary workaround if implemented</li>
+<li><strong>CDC with Materialized Views</strong> (Option 2) is a strong candidate given the existing demo repository and aligns with industry practices (Netflix, AWS)</li>
+<li><strong>Database-native Materialized Views</strong> (Option 2.5) offer a simpler alternative when infrastructure complexity is a concern</li>
+<li><strong>Event-based Read Models</strong> (Option 4) align well with event-driven architecture already in place but require more custom code</li>
+<li>Data API provides a clean separation but adds latency</li>
+<li>Industry leaders (Netflix, AWS) favor CDC + Materialized Views pattern for production microservices</li>
+</ul>
+        </article>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <ul class="footer-links">
+                <li><a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices">GitHub</a></li>
+                <li><a href="index.html">ADRs</a></li>
+                <li><a href="../patterns.html">Patterns</a></li>
+                <li><a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS/blob/main/LICENSE">License</a></li>
+            </ul>
+            <p class="footer-copy">MIT License &mdash; Built to demonstrate microservices architecture patterns in .NET</p>
+        </div>
+    </footer>
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

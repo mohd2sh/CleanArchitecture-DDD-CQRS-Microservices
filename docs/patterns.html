@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microservices Patterns — Outbox, Saga, CQRS | Clean Architecture .NET</title>
+    <meta name="description" content="Deep dive into outbox pattern, saga orchestration, CQRS, and architecture tests implemented in this .NET 8 microservices reference repository.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/patterns.html">
+    <meta property="og:title" content="Microservices Patterns — Outbox, Saga, CQRS">
+    <meta property="og:description" content="Deep dive into enterprise patterns in this .NET 8 microservices reference implementation.">
+    <meta property="og:url" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/patterns.html">
+    <meta property="og:image" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/assets/images/social-preview.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo"><span class="logo-dotnet">.NET</span> Microservices CQRS</a>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">&#9776;</button>
+            <ul class="nav-links">
+                <li><a href="index.html#features">Features</a></li>
+                <li><a href="index.html#architecture">Architecture</a></li>
+                <li><a href="patterns.html">Patterns</a></li>
+                <li><a href="adrs/index.html">ADRs</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices" class="btn btn-primary btn-sm" target="_blank" rel="noopener">Star on GitHub</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container-narrow">
+        <div class="page-header">
+            <h1>Microservices Patterns</h1>
+            <p class="page-meta">Enterprise patterns implemented in this reference repository</p>
+        </div>
+
+        <article class="article-content">
+            <h2>Outbox Pattern</h2>
+            <p>Integration events are stored in an outbox table within the same database transaction as business data. A background processor reads pending events and publishes them to RabbitMQ via the MassTransit bridge (<code>CleanArchitecture.Outbox.MassTransit.Bridge</code>).</p>
+            <p><strong>Benefits:</strong> Guaranteed at-least-once delivery, survives application restarts, works with any message broker through the <code>IOutboxPublisher</code> abstraction.</p>
+
+            <h3>Event Flow</h3>
+            <ol>
+                <li>Service publishes integration event &rarr; written to outbox table (same transaction)</li>
+                <li>Outbox processor picks up event &rarr; publishes to RabbitMQ via MassTransit</li>
+                <li>Other services consume from RabbitMQ &rarr; invoke integration event handlers</li>
+                <li>Handlers update local service state</li>
+            </ol>
+
+            <h2>Saga Orchestration</h2>
+            <p>The Orchestration service manages distributed workflows using MassTransit state machines. Sagas coordinate operations spanning multiple services and handle compensation when steps fail.</p>
+            <p><strong>Examples:</strong></p>
+            <ul>
+                <li><strong>AssignTechnicianSaga</strong> &mdash; Coordinates technician assignment validation</li>
+                <li><strong>CompleteWorkOrderSaga</strong> &mdash; Coordinates work order completion across Assets and Technicians</li>
+            </ul>
+            <p>When operations fail, compensation events (e.g., <code>WorkOrderCompletingFailedEvent</code>) trigger rollback in participating services.</p>
+
+            <h2>CQRS</h2>
+            <p>Commands use EF Core with write repositories. Queries use Dapper with read repositories. Architecture tests enforce separation at compile time:</p>
+            <ul>
+                <li>Query handlers cannot use <code>IRepository</code> (write-side)</li>
+                <li>Command handlers cannot use <code>IReadRepository</code> (read-side)</li>
+                <li>Handlers must return DTOs, never domain entities</li>
+            </ul>
+
+            <h2>Architecture Tests</h2>
+            <p>Automated tests in <code>CleanArchitecture.Core.ArchitectureTests</code> enforce DDD and Clean Architecture boundaries across all services:</p>
+            <ul>
+                <li>Value objects must be immutable and sealed</li>
+                <li>Domain types must not depend on outer layers</li>
+                <li>Application features cannot depend on other bounded contexts</li>
+                <li>Service boundaries remain respected</li>
+            </ul>
+            <p>Violations are caught at compile time during CI, not in code review.</p>
+
+            <h2>Cross-Service Queries</h2>
+            <p>Querying data across service boundaries is an open challenge. See <a href="adrs/adr-008.html">ADR-008</a> for evaluated options including CDC with materialized views, data API, and event-based read models.</p>
+
+            <h2>Further Reading</h2>
+            <ul>
+                <li><a href="adrs/adr-007.html">ADR-007: Message Bus Framework Selection</a></li>
+                <li><a href="adrs/adr-008.html">ADR-008: Cross-Service Query Patterns</a></li>
+                <li><a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices">Full source on GitHub</a></li>
+            </ul>
+        </article>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <ul class="footer-links">
+                <li><a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices">GitHub</a></li>
+                <li><a href="adrs/index.html">ADRs</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices/blob/main/LICENSE">License</a></li>
+            </ul>
+            <p class="footer-copy">MIT License &mdash; Built to demonstrate microservices architecture patterns in .NET</p>
+        </div>
+    </footer>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

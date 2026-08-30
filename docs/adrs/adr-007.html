@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADR-007: Message Bus and Saga Orchestration Framework Selection</title>
+    <meta name="description" content="MassTransit vs NServiceBus comparison for saga orchestration and message bus in .NET microservices.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/adrs/adr-007.html">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="ADR-007: Message Bus and Saga Orchestration Framework Selection">
+    <meta property="og:description" content="MassTransit vs NServiceBus comparison for saga orchestration and message bus in .NET microservices.">
+    <meta property="og:url" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/adrs/adr-007.html">
+    <meta property="og:image" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/assets/images/social-preview.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ADR-007: Message Bus and Saga Orchestration Framework Selection">
+    <meta name="twitter:description" content="MassTransit vs NServiceBus comparison for saga orchestration and message bus in .NET microservices.">
+    <meta name="twitter:image" content="https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/assets/images/social-preview.png">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "ADR-007: Message Bus and Saga Orchestration Framework Selection",
+        "description": "MassTransit vs NServiceBus comparison for saga orchestration and message bus in .NET microservices.",
+        "author": {"@type": "Person", "name": "Mohammad Shakhtour"},
+        "url": "https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/adrs/adr-007.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../index.html" class="logo"><span class="logo-dotnet">.NET</span> Microservices CQRS</a>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">&#9776;</button>
+            <ul class="nav-links">
+                <li><a href="../index.html#features">Features</a></li>
+                <li><a href="../index.html#architecture">Architecture</a></li>
+                <li><a href="../patterns.html">Patterns</a></li>
+                <li><a href="index.html">ADRs</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices" class="btn btn-primary btn-sm" target="_blank" rel="noopener">Star on GitHub</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container-narrow">
+        <div class="page-header">
+            <h1>ADR-007: Message Bus and Saga Orchestration Framework Selection</h1>
+            <div class="page-meta">
+                <span>Author: Mohammad Shakhtour</span>
+                <span class="status-badge status-accepted">Accepted</span>
+            </div>
+        </div>
+        <article class="article-content">
+<p><strong>Author:</strong> Mohammad Shakhtour  </p>
+<p><strong>Status:</strong> Accepted  </p>
+<h2>Summary</h2>
+<p>MassTransit chosen for this repository</p>
+<h2>Context</h2>
+<p>In a microservices architecture, services need to communicate asynchronously via a message bus. We require:</p>
+<ol>
+<li><strong>Message Bus Communication</strong> - Reliable, guaranteed delivery of events between services</li>
+<li><strong>Saga Orchestration</strong> - Coordinating distributed workflows across multiple services</li>
+<li><strong>Retry Mechanisms</strong> - Handling transient failures with configurable retry policies</li>
+<li><strong>Error Handling</strong> - Dead letter queues, fault handling, and compensation</li>
+<li><strong>Monitoring and Traceability</strong> - Observability into message flow, saga state, and failures</li>
+<li><strong>Production Readiness</strong> - Enterprise features for mission-critical systems</li>
+</ol>
+<p>The original template used an in-process outbox pattern with background workers. For microservices, we need a framework that can:</p>
+<ul>
+<li>Publish messages to a message broker (RabbitMQ, Azure Service Bus, etc.)</li>
+<li>Handle saga orchestration with state persistence</li>
+<li>Provide retry policies and error handling</li>
+<li>Support monitoring and debugging in production</li>
+</ul>
+<h2>Decision Drivers</h2>
+<ul>
+<li><strong>Cost</strong> - Open-source vs commercial licensing</li>
+<li><strong>Enterprise Features</strong> - Monitoring, tooling, support, and production-grade capabilities</li>
+<li><strong>Development Complexity</strong> - Learning curve and implementation effort</li>
+<li><strong>Production Readiness</strong> - Reliability, scalability, and operational tooling</li>
+<li><strong>Community and Support</strong> - Documentation, community help, and professional support</li>
+<li><strong>Transport Flexibility</strong> - Support for multiple message brokers</li>
+<li><strong>Saga Support</strong> - Built-in saga orchestration capabilities</li>
+<li><strong>Migration Path</strong> - Ability to switch frameworks if needed</li>
+</ul>
+<h2>Considered Options</h2>
+<h3>Option 1: MassTransit</h3>
+<p><strong>Description:</strong>  </p>
+<p>Open-source .NET messaging framework that provides abstractions over message brokers and supports saga orchestration.</p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Supports multiple transports</li>
+<li>Saga support via state machines </li>
+<li>Built-in retry mechanisms </li>
+<li>Message scheduling</li>
+<li>Consumer pipeline with middleware support</li>
+<li>Open-source and free</li>
+</ul>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><strong>No licensing costs</strong> - Free and open-source</li>
+<li><strong>Transport flexibility</strong> - Easy to switch between RabbitMQ, Azure Service Bus, etc.</li>
+<li><strong>Active community</strong> - Good GitHub activity and community support</li>
+<li><strong>Saga support</strong> - State machines</li>
+<li><strong>Retry policies</strong> - Configurable retry with exception filtering</li>
+<li><strong>Learning curve</strong> - Reasonable for developers familiar with .NET</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><strong>Limited monitoring tools</strong> - No built-in enterprise monitoring solution</li>
+<li><strong>Debugging complexity</strong> - Harder to trace message flow and saga state</li>
+<li><strong>Production tooling</strong> - Limited compared to commercial solutions</li>
+</ul>
+<h3>Option 2: NServiceBus</h3>
+<p><strong>Description:</strong>  </p>
+<p>Commercial .NET messaging framework with enterprise-grade tooling and support from Particular Software.</p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Supports multiple transports (RabbitMQ, Azure Service Bus, SQL Server, etc.)</li>
+<li>Advanced saga orchestration with automatic state persistence</li>
+<li><strong>Monitoring</strong> - Visual message flow , real-time monitoring and alerting dashboard</li>
+<li><strong>ServiceControl</strong> - Centralized message audit and error management</li>
+<li>Production-proven at scale</li>
+</ul>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><strong>Enterprise monitoring</strong> - ServiceInsight provides visual message flow tracing</li>
+<li><strong>Production tooling</strong> - ServicePulse for real-time monitoring and alerting</li>
+<li><strong>Excellent debugging</strong> - ServiceInsight shows complete message journey and saga state</li>
+<li><strong>Professional support</strong> - Commercial support from Particular Software</li>
+<li><strong>Advanced retry policies</strong> - good error handling, dead letter queue management and manual retry support</li>
+<li><strong>Saga orchestration</strong> - Excellent saga support with automatic state management</li>
+<li><strong>Observability</strong> - Built-in metrics, tracing, and monitoring</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><strong>Cost</strong> - Commercial license required (not free)</li>
+<li><strong>Learning curve</strong> - More complex than MassTransit, requires training</li>
+<li><strong>Overhead</strong> - Additional infrastructure (ServiceControl, ServicePulse) to manage</li>
+</ul>
+<h3>Option 3: Custom Implementation</h3>
+<p><strong>Description:</strong>  </p>
+<p>Build messaging infrastructure from scratch using raw message broker APIs and custom saga orchestration.</p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Full control over implementation</li>
+<li>No framework dependencies</li>
+<li>Custom retry logic</li>
+<li>Custom saga state management</li>
+<li>Custom monitoring and logging</li>
+</ul>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><strong>Full control</strong> - Complete control over every aspect</li>
+<li><strong>No licensing</strong> - No framework licensing costs</li>
+<li><strong>Lightweight</strong> - Only what you need, no framework overhead</li>
+<li><strong>Customization</strong> - Tailored to exact requirements</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><strong>Development effort</strong> - Significant time to build and test</li>
+<li><strong>Maintenance burden</strong> - Ongoing maintenance and bug fixes</li>
+<li><strong>Edge cases</strong> - Need to handle all failure scenarios</li>
+<li><strong>Production risks</strong> - Higher risk of bugs and edge cases</li>
+<li><strong>No tooling</strong> - Need to build monitoring and debugging tools</li>
+<li><strong>Reinventing the wheel</strong> - Solving problems already solved by frameworks</li>
+</ul>
+<p><strong>Why Not:</strong></p>
+<p>Building messaging infrastructure from scratch is a significant undertaking. Frameworks like MassTransit and NServiceBus have solved complex problems.</p>
+<p>The development and maintenance effort far outweighs the benefits of full control.</p>
+<h2>Decision Outcome</h2>
+<p><strong>Chosen for this repository: MassTransit</strong></p>
+<p><strong>Reasoning:</strong></p>
+<ol>
+<li><strong>Open-source and free</strong> - Suitable for demos, learning, and open-source projects</li>
+<li><strong>Good enough features</strong> - Provides saga orchestration, retry, and basic monitoring</li>
+<li><strong>Transport flexibility</strong> - Easy to switch transports if needed</li>
+</ol>
+<p><strong>But I would recommend NServiceBus for production and enterprise applications</strong></p>
+<h2>Migration Path</h2>
+<h3>From MassTransit to NServiceBus</h3>
+<p>The migration is feasible because:</p>
+<ol>
+<li><strong>Similar concepts</strong> - Both use similar patterns (consumers, sagas, retry policies)</li>
+<li><strong>Transport abstraction</strong> - Both abstract the underlying message broker</li>
+<li><strong>Saga patterns</strong> - Both support saga orchestration</li>
+<li><strong>Event contracts</strong> - Message contracts can remain largely unchanged</li>
+<li><strong>Template Abstraction</strong> - our template already abstract the outbox which make it easier to change the bridge.</li>
+</ol>
+<p><strong>Migration Steps:</strong></p>
+<ol>
+<li>Replace MassTransit dependencies with NServiceBus</li>
+<li>Replcae CleanArchitecture.Outbox.MassTransit.Bridge with NServicebus bridge implementation</li>
+</ol>
+        </article>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <ul class="footer-links">
+                <li><a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices">GitHub</a></li>
+                <li><a href="index.html">ADRs</a></li>
+                <li><a href="../patterns.html">Patterns</a></li>
+                <li><a href="https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS/blob/main/LICENSE">License</a></li>
+            </ul>
+            <p class="footer-copy">MIT License &mdash; Built to demonstrate microservices architecture patterns in .NET</p>
+        </div>
+    </footer>
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>
