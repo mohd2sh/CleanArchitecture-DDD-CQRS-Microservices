@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" Sdk="Microsoft.Docker.Sdk">
+  <PropertyGroup Label="Globals">
+    <ProjectVersion>2.1</ProjectVersion>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <ProjectGuid>{A7C3E91F-2B4D-4E8A-9F1C-6D5E8A0B3C7D}</ProjectGuid>
+    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
+    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/</DockerServiceUrl>
+    <DockerServiceName>swagger-hub</DockerServiceName>
+    <DockerComposeProjectName>cmms-microservices</DockerComposeProjectName>
+    <DependencyAwareStart>true</DependencyAwareStart>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="docker-compose.yml" />
+    <None Include="docker-compose.override.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include=".dockerignore" />
+    <None Include="Properties\launchSettings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="src\services\WorkOrders.Service\CleanArchitecture.Cmms.Api.WorkOrders\CleanArchitecture.Cmms.Api.WorkOrders.csproj" />
+    <ProjectReference Include="src\services\Assets.Service\CleanArchitecture.Cmms.Api.Assets\CleanArchitecture.Cmms.Api.Assets.csproj" />
+    <ProjectReference Include="src\services\Technicians.Service\CleanArchitecture.Cmms.Api.Technicians\CleanArchitecture.Cmms.Api.Technicians.csproj" />
+    <ProjectReference Include="src\services\Orchestration.Service\Orchestration\Orchestration.Service.csproj" />
+  </ItemGroup>
+</Project>

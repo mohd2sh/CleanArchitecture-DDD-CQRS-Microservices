@@ -1,0 +1,52 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "swagger-hub",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/",
+      "serviceActions": {
+        "rabbitmq": "StartWithoutDebugging",
+        "sqlserver-microservices": "StartWithoutDebugging",
+        "database-init": "StartWithoutDebugging",
+        "workorders-service": "StartWithoutDebugging",
+        "assets-service": "StartWithoutDebugging",
+        "technicians-service": "StartWithoutDebugging",
+        "orchestration-service": "StartWithoutDebugging",
+        "swagger-hub": "StartWithoutDebugging"
+      }
+    },
+    "Infrastructure": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "rabbitmq": "StartWithoutDebugging",
+        "sqlserver-microservices": "StartWithoutDebugging",
+        "database-init": "StartWithoutDebugging",
+        "workorders-service": "DoNotStart",
+        "assets-service": "DoNotStart",
+        "technicians-service": "DoNotStart",
+        "orchestration-service": "DoNotStart",
+        "swagger-hub": "DoNotStart"
+      }
+    },
+    "FullStack": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "swagger-hub",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/",
+      "serviceActions": {
+        "rabbitmq": "StartWithoutDebugging",
+        "sqlserver-microservices": "StartWithoutDebugging",
+        "database-init": "StartWithoutDebugging",
+        "workorders-service": "StartWithoutDebugging",
+        "assets-service": "StartWithoutDebugging",
+        "technicians-service": "StartWithoutDebugging",
+        "orchestration-service": "StartWithoutDebugging",
+        "swagger-hub": "StartWithoutDebugging"
+      }
+    }
+  }
+}

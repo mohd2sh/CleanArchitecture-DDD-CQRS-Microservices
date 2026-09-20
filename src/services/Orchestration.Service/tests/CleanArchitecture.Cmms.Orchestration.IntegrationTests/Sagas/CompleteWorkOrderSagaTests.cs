@@ -1,11 +1,11 @@
 using CleanArchitecture.Cmms.Contracts.Assets.Events;
 using CleanArchitecture.Cmms.Contracts.Technicians.Events;
 using CleanArchitecture.Cmms.Contracts.WorkOrders.Events;
+using CleanArchitecture.Cmms.Orchestration.IntegrationTests.Infrastructure;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchestration.Service.Infrastructure;
 
-namespace Orchestration.Service.Sagas;
+namespace CleanArchitecture.Cmms.Orchestration.IntegrationTests.Sagas;
 
 /// <summary>
 /// Integration tests for CompleteWorkOrderSaga
