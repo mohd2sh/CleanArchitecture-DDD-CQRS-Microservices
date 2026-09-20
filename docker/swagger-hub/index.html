@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CMMS API Swagger Hub</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --text: #e7ecf3;
+      --muted: #9aa8bc;
+      --accent: #3d8bfd;
+      --border: #2a3648;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, #1b2a44, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2.5rem 1.5rem;
+    }
+    main { max-width: 720px; margin: 0 auto; }
+    h1 { font-size: 1.75rem; margin: 0 0 0.5rem; }
+    p { color: var(--muted); line-height: 1.5; }
+    .note {
+      margin: 1rem 0 1.5rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(61, 139, 253, 0.08);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; }
+    a {
+      display: block;
+      padding: 1rem 1.15rem;
+      border-radius: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    a:hover { border-color: var(--accent); transform: translateY(-1px); }
+    a strong { display: block; margin-bottom: 0.25rem; }
+    a span { color: var(--muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>CMMS API Swagger Hub</h1>
+    <p>Quick links to every microservice OpenAPI UI. Swagger tabs open automatically when this page loads.</p>
+    <div class="note">If only this page opens, allow pop-ups for <code>localhost:5080</code> and refresh.</div>
+    <ul>
+      <li>
+        <a id="workorders" href="http://localhost:5001/swagger" target="_blank" rel="noopener">
+          <strong>WorkOrders</strong>
+          <span>http://localhost:5001/swagger</span>
+        </a>
+      </li>
+      <li>
+        <a id="assets" href="http://localhost:5002/swagger" target="_blank" rel="noopener">
+          <strong>Assets</strong>
+          <span>http://localhost:5002/swagger</span>
+        </a>
+      </li>
+      <li>
+        <a id="technicians" href="http://localhost:5003/swagger" target="_blank" rel="noopener">
+          <strong>Technicians</strong>
+          <span>http://localhost:5003/swagger</span>
+        </a>
+      </li>
+      <li>
+        <a href="http://localhost:15672" target="_blank" rel="noopener">
+          <strong>RabbitMQ Management</strong>
+          <span>http://localhost:15672 (guest/guest)</span>
+        </a>
+      </li>
+    </ul>
+  </main>
+  <script>
+    const swaggerUrls = [
+      "http://localhost:5001/swagger",
+      "http://localhost:5002/swagger",
+      "http://localhost:5003/swagger"
+    ];
+
+    // Delay slightly so API containers can finish starting under DependencyAwareStart.
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        swaggerUrls.forEach((url) => window.open(url, "_blank", "noopener,noreferrer"));
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

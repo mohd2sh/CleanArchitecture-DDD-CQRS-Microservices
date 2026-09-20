@@ -1,6 +1,6 @@
 using CleanArchitecture.Core.Application.Abstractions.Common;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace CleanArchitecture.Core.Api.Configurations;
@@ -21,33 +21,26 @@ public class ResultResponseOperationFilter : IOperationFilter
     {
         if (!operation.Responses.ContainsKey(statusCode))
         {
-            OpenApiSchema schema;
+            IOpenApiSchema schema;
 
             if (responseType == typeof(ProblemDetails))
             {
                 schema = new OpenApiSchema
                 {
-                    Type = "object",
-                    Properties = new Dictionary<string, OpenApiSchema>
+                    Type = JsonSchemaType.Object,
+                    Properties = new Dictionary<string, IOpenApiSchema>
                     {
-                        ["type"] = new OpenApiSchema { Type = "string" },
-                        ["title"] = new OpenApiSchema { Type = "string" },
-                        ["status"] = new OpenApiSchema { Type = "integer", Format = "int32" },
-                        ["detail"] = new OpenApiSchema { Type = "string" },
-                        ["instance"] = new OpenApiSchema { Type = "string" }
+                        ["type"] = new OpenApiSchema { Type = JsonSchemaType.String },
+                        ["title"] = new OpenApiSchema { Type = JsonSchemaType.String },
+                        ["status"] = new OpenApiSchema { Type = JsonSchemaType.Integer, Format = "int32" },
+                        ["detail"] = new OpenApiSchema { Type = JsonSchemaType.String },
+                        ["instance"] = new OpenApiSchema { Type = JsonSchemaType.String }
                     }
                 };
             }
             else
             {
-                schema = new OpenApiSchema
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.Schema,
-                        Id = responseType.Name
-                    }
-                };
+                schema = new OpenApiSchemaReference(responseType.Name);
             }
 
             operation.Responses.Add(statusCode, new OpenApiResponse
@@ -64,4 +57,3 @@ public class ResultResponseOperationFilter : IOperationFilter
         }
     }
 }
-

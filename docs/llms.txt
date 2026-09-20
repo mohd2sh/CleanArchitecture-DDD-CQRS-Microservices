@@ -1,6 +1,6 @@
 # CleanArchitecture-DDD-CQRS-Microservices
 
-> Complete .NET 8 microservices reference with Clean Architecture, DDD, CQRS, saga orchestration, outbox pattern, and automated architecture tests.
+> Complete .NET 10 microservices reference with Clean Architecture, DDD, CQRS, saga orchestration, outbox pattern, and automated architecture tests.
 
 ## Summary
 

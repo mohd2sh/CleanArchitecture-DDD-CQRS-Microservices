@@ -7,7 +7,7 @@
 
 **Documentation:** [mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices](https://mohd2sh.github.io/CleanArchitecture-DDD-CQRS-Microservices/)
 
-A .NET 8 microservices architecture demonstrating Clean Architecture, Domain-Driven Design (DDD), and CQRS with automated architecture tests, integration tests, and event-driven distributed coordination. This repository provides a complete, functioning microservices implementation that teams can learn from and adapt.
+A .NET 10 microservices architecture demonstrating Clean Architecture, Domain-Driven Design (DDD), and CQRS with automated architecture tests, integration tests, and event-driven distributed coordination. This repository provides a complete, functioning microservices implementation that teams can learn from and adapt.
 
 **Original Template:** [CleanArchitecture-DDD-CQRS](https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS)
 
@@ -359,28 +359,63 @@ The original template's ADRs (ADR-001 through ADR-006) documented foundational p
 
 ### Prerequisites
 
-- .NET 8 SDK
+- .NET 10 SDK
 - Docker Desktop
-- Visual Studio 2022 or VS Code
+- Visual Studio 2026 (with Container Tools) or VS Code
 
-### Docker Compose
+### Visual Studio (recommended)
 
-The easiest way to run all services:
+The solution includes a Docker Compose project (`docker-compose.dcproj`) with three launch profiles:
+
+| Profile | Starts | Use when |
+|---------|--------|----------|
+| **Docker Compose** | Infra + all microservice containers | Default full stack in Docker |
+| **Infrastructure** | SQL Server, RabbitMQ, DB init | Debugging APIs locally from Visual Studio |
+| **FullStack** | Infra + all microservice containers | Same as full stack (explicit name) |
+
+After pulling these changes, **close and reopen the solution** (or unload/reload the `docker-compose` project). Confirm Solution Explorer shows `docker-compose` → `Properties` → `launchSettings.json`.
+
+**Debug APIs against infrastructure**
+
+1. Set the startup project to **docker-compose**
+2. In the toolbar dropdown, select **Infrastructure** (also available under **Debug → Manage Docker Compose Launch Settings**)
+3. Start (Ctrl+F5) — wait until SQL Server and RabbitMQ are healthy and databases are initialized
+4. Set one or more API projects as startup projects (**Solution → Configure Startup Projects**), or F5 a single API
+5. Open Swagger from each API’s launch URL (for example WorkOrders: `https://localhost:56412/swagger`)
+
+APIs use `appsettings.Development.json` (`localhost` for SQL and RabbitMQ), so they connect to the containers started by the Infrastructure profile.
+
+**Run the full stack in containers**
+
+1. Set the startup project to **docker-compose**
+2. Select the **Docker Compose** or **FullStack** profile
+3. Start (Ctrl+F5 or F5)
+
+**Access (Full Stack):**
+- Swagger Hub (opens all API Swaggers): http://localhost:5080
+- WorkOrders: http://localhost:5001/swagger
+- Assets: http://localhost:5002/swagger
+- Technicians: http://localhost:5003/swagger
+- RabbitMQ Management: http://localhost:15672 (guest/guest)
+
+When you start **Docker Compose** or **FullStack**, Visual Studio opens the Swagger Hub, which then opens WorkOrders, Assets, and Technicians Swagger tabs. Allow pop-ups for `localhost:5080` if the browser blocks them.
+
+### CLI (Docker Compose)
 
 ```bash
 git clone https://github.com/mohd2sh/CleanArchitecture-DDD-CQRS-Microservices.git
 cd CleanArchitecture-DDD-CQRS-Microservices
-docker-compose up
+
+# Infrastructure only (SQL + RabbitMQ + DB init) — then run APIs from VS or dotnet run
+docker compose up -d rabbitmq sqlserver-microservices database-init
+
+# Full stack (infra + all services)
+docker compose up -d --build
 ```
 
-**Access:**
-- API Gateway: http://localhost:8000
-- Swagger UI: http://localhost:8081
-- RabbitMQ Management: http://localhost:15672 (guest/guest)
+### Local Development (CLI)
 
-### Local Development
-
-Run services individually:
+With infrastructure running, start services individually:
 
 ```bash
 # WorkOrders Service
@@ -396,9 +431,9 @@ cd src/services/Technicians.Service/CleanArchitecture.Cmms.Api.Technicians
 dotnet run
 ```
 
-Each service requires:
-- SQL Server connection string
-- RabbitMQ connection string
+Each Development profile already points at:
+- SQL Server: `localhost,1433`
+- RabbitMQ: `localhost:5672`
 
 ## Testing Strategy
 

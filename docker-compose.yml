@@ -4,8 +4,8 @@ services:
     container_name: rabbitmq
     hostname: rabbitmq
     ports:
-      - "5672:5672"      
-      - "15672:15672"   
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -66,7 +66,7 @@ services:
           exit 1
         fi
     networks:
-      - microservices-network      
+      - microservices-network
 
   orchestration-service:
     build:
@@ -168,6 +168,24 @@ services:
       retries: 5
       start_period: 30s
 
+  swagger-hub:
+    image: nginx:1.27-alpine
+    container_name: swagger-hub
+    ports:
+      - "5080:80"
+    volumes:
+      - ./docker/swagger-hub/index.html:/usr/share/nginx/html/index.html:ro
+      - ./docker/swagger-hub/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - microservices-network
+    depends_on:
+      workorders-service:
+        condition: service_started
+      assets-service:
+        condition: service_started
+      technicians-service:
+        condition: service_started
+
 networks:
   microservices-network:
     driver: bridge
@@ -175,4 +193,3 @@ networks:
 volumes:
   rabbitmq_data:
   sql_data:
-

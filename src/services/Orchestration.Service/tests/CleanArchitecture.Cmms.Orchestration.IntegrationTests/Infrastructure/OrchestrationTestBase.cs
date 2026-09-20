@@ -121,7 +121,7 @@ public abstract class OrchestrationTestBase : IAsyncLifetime
         }
 
         // Start bus
-        var harness = ServiceProvider.GetRequiredService<IMassTransitTestHarness>();
+        var harness = ServiceProvider.GetRequiredService<ITestHarness>();
         await harness.Start();
 
         BusControl = ServiceProvider.GetRequiredService<IBusControl>();
@@ -130,14 +130,21 @@ public abstract class OrchestrationTestBase : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        var harness = ServiceProvider?.GetRequiredService<IMassTransitTestHarness>();
+        var harness = ServiceProvider?.GetRequiredService<ITestHarness>();
         if (harness != null)
         {
             await harness.Stop();
         }
 
-        await SqlServerContainer?.DisposeAsync() ?? Task.CompletedTask;
-        await RabbitMqContainer?.DisposeAsync() ?? Task.CompletedTask;
+        if (SqlServerContainer is not null)
+        {
+            await SqlServerContainer.DisposeAsync();
+        }
+
+        if (RabbitMqContainer is not null)
+        {
+            await RabbitMqContainer.DisposeAsync();
+        }
     }
 
     protected async Task<CompleteWorkOrderSagaState?> GetSagaStateAsync(Guid workOrderId)

@@ -16,7 +16,7 @@ public class AssignTechnicianSagaTests : OrchestrationTestBase
     public async Task AssignTechnicianSaga_ShouldStart_WhenWorkOrderAssignedEventReceived()
     {
         // Arrange
-        var harness = ServiceProvider.GetRequiredService<IMassTransitTestHarness>();
+        var harness = ServiceProvider.GetRequiredService<ITestHarness>();
         var workOrderId = Guid.NewGuid();
         var technicianId = Guid.NewGuid();
 
@@ -41,7 +41,7 @@ public class AssignTechnicianSagaTests : OrchestrationTestBase
     public async Task AssignTechnicianSaga_ShouldComplete_WhenTechnicianAssignmentValidated()
     {
         // Arrange
-        var harness = ServiceProvider.GetRequiredService<IMassTransitTestHarness>();
+        var harness = ServiceProvider.GetRequiredService<ITestHarness>();
         var workOrderId = Guid.NewGuid();
         var technicianId = Guid.NewGuid();
 
@@ -63,7 +63,7 @@ public class AssignTechnicianSagaTests : OrchestrationTestBase
     public async Task AssignTechnicianSaga_ShouldCompensate_WhenTechnicianAssignmentFailed()
     {
         // Arrange
-        var harness = ServiceProvider.GetRequiredService<IMassTransitTestHarness>();
+        var harness = ServiceProvider.GetRequiredService<ITestHarness>();
         var workOrderId = Guid.NewGuid();
         var technicianId = Guid.NewGuid();
 
@@ -85,4 +85,3 @@ public class AssignTechnicianSagaTests : OrchestrationTestBase
         Assert.True(await harness.Published.Any<WorkOrderAssignmentFailedEvent>(e => e.Context.Message.WorkOrderId == workOrderId));
     }
 }
-
