@@ -17,12 +17,12 @@ public class CompleteWorkOrderSagaTests : OrchestrationTestBase
     public async Task CompleteWorkOrderSaga_ShouldStart_WhenWorkOrderCompletedEventReceived()
     {
         // Arrange
-        var harness = ServiceProvider.GetRequiredService<IMassTransitTestHarness>();
+        var harness = ServiceProvider.GetRequiredService<ITestHarness>();
         var workOrderId = Guid.NewGuid();
         var assetId = Guid.NewGuid();
         var technicianId = Guid.NewGuid();
 
-        var @event = new WorkOrderCompletedEvent(workOrderId, assetId, technicianId, DateTime.UtcNow);
+        var @event = new WorkOrderCompletedEvent(workOrderId, assetId, technicianId);
 
         // Act
         await harness.Bus.Publish(@event);
@@ -46,13 +46,13 @@ public class CompleteWorkOrderSagaTests : OrchestrationTestBase
     public async Task CompleteWorkOrderSaga_ShouldComplete_WhenBothServicesComplete()
     {
         // Arrange
-        var harness = ServiceProvider.GetRequiredService<IMassTransitTestHarness>();
+        var harness = ServiceProvider.GetRequiredService<ITestHarness>();
         var workOrderId = Guid.NewGuid();
         var assetId = Guid.NewGuid();
         var technicianId = Guid.NewGuid();
 
         // Start saga
-        await harness.Bus.Publish(new WorkOrderCompletedEvent(workOrderId, assetId, technicianId, DateTime.UtcNow));
+        await harness.Bus.Publish(new WorkOrderCompletedEvent(workOrderId, assetId, technicianId));
         await harness.Consumed.Any<WorkOrderCompletedEvent>();
 
         // Act - Both services complete
@@ -74,13 +74,13 @@ public class CompleteWorkOrderSagaTests : OrchestrationTestBase
     public async Task CompleteWorkOrderSaga_ShouldCompensate_WhenAssetMaintenanceFails()
     {
         // Arrange
-        var harness = ServiceProvider.GetRequiredService<IMassTransitTestHarness>();
+        var harness = ServiceProvider.GetRequiredService<ITestHarness>();
         var workOrderId = Guid.NewGuid();
         var assetId = Guid.NewGuid();
         var technicianId = Guid.NewGuid();
 
         // Start saga
-        await harness.Bus.Publish(new WorkOrderCompletedEvent(workOrderId, assetId, technicianId, DateTime.UtcNow));
+        await harness.Bus.Publish(new WorkOrderCompletedEvent(workOrderId, assetId, technicianId));
         await harness.Consumed.Any<WorkOrderCompletedEvent>();
 
         // Act - Asset maintenance fails
@@ -101,13 +101,13 @@ public class CompleteWorkOrderSagaTests : OrchestrationTestBase
     public async Task CompleteWorkOrderSaga_ShouldCompensate_WhenTechnicianAssignmentFails()
     {
         // Arrange
-        var harness = ServiceProvider.GetRequiredService<IMassTransitTestHarness>();
+        var harness = ServiceProvider.GetRequiredService<ITestHarness>();
         var workOrderId = Guid.NewGuid();
         var assetId = Guid.NewGuid();
         var technicianId = Guid.NewGuid();
 
         // Start saga
-        await harness.Bus.Publish(new WorkOrderCompletedEvent(workOrderId, assetId, technicianId, DateTime.UtcNow));
+        await harness.Bus.Publish(new WorkOrderCompletedEvent(workOrderId, assetId, technicianId));
         await harness.Consumed.Any<WorkOrderCompletedEvent>();
 
         // Act - Technician assignment fails
@@ -124,4 +124,3 @@ public class CompleteWorkOrderSagaTests : OrchestrationTestBase
         Assert.True(await harness.Published.Any<WorkOrderCompletingFailedEvent>(e => e.Context.Message.WorkOrderId == workOrderId));
     }
 }
-
